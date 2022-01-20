@@ -1,0 +1,1092 @@
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccGy6iYM.s 			page 1
+
+
+   1              		.cpu cortex-m3
+   2              		.eabi_attribute 20, 1
+   3              		.eabi_attribute 21, 1
+   4              		.eabi_attribute 23, 3
+   5              		.eabi_attribute 24, 1
+   6              		.eabi_attribute 25, 1
+   7              		.eabi_attribute 26, 1
+   8              		.eabi_attribute 30, 1
+   9              		.eabi_attribute 34, 1
+  10              		.eabi_attribute 18, 4
+  11              		.file	"ESPControl.c"
+  12              		.text
+  13              	.Ltext0:
+  14              		.cfi_sections	.debug_frame
+  15              		.section	.rodata.ResetESP.str1.4,"aMS",%progbits,1
+  16              		.align	2
+  17              	.LC0:
+  18 0000 4572726F 		.ascii	"Error 1\000"
+  18      72203100 
+  19              		.section	.text.ResetESP,"ax",%progbits
+  20              		.align	1
+  21              		.global	ResetESP
+  22              		.arch armv7-m
+  23              		.syntax unified
+  24              		.thumb
+  25              		.thumb_func
+  26              		.fpu softvfp
+  28              	ResetESP:
+  29              	.LVL0:
+  30              	.LFB72:
+  31              		.file 1 "Src/ESPControl.c"
+   1:Src/ESPControl.c **** #include "ESPControl.h"
+   2:Src/ESPControl.c **** #include "main.h"
+   3:Src/ESPControl.c **** 
+   4:Src/ESPControl.c **** void TxESP(UART_HandleTypeDef *huart, char *command, char *pData, uint16_t Size)
+   5:Src/ESPControl.c **** {
+   6:Src/ESPControl.c **** 	uint8_t cmdSize = strlen(command); 
+   7:Src/ESPControl.c **** 
+   8:Src/ESPControl.c **** 	for(uint8_t i = 0; i<2; i++) {
+   9:Src/ESPControl.c **** 		HAL_Delay(1000);
+  10:Src/ESPControl.c **** 		HAL_UART_Transmit(huart, (uint8_t*)command, (uint16_t)cmdSize, 0xFFFF);
+  11:Src/ESPControl.c **** 		RxESP(huart, 1, pData, Size);
+  12:Src/ESPControl.c **** 		if(strcmp(pData, "No response") == 0)
+  13:Src/ESPControl.c **** 			strcpy(pData, "0");
+  14:Src/ESPControl.c **** 		else
+  15:Src/ESPControl.c **** 			break;
+  16:Src/ESPControl.c **** 	}
+  17:Src/ESPControl.c **** }
+  18:Src/ESPControl.c **** 
+  19:Src/ESPControl.c **** void RxESP(UART_HandleTypeDef *huart, uint8_t resetOnExept, char *pData, uint16_t Size)
+  20:Src/ESPControl.c **** {
+  21:Src/ESPControl.c **** 	//while(huart->RxState != HAL_UART_STATE_READY){}
+  22:Src/ESPControl.c **** 	HAL_UART_Receive_IT(huart, (uint8_t *) pData, Size);
+  23:Src/ESPControl.c **** 
+  24:Src/ESPControl.c **** 	const uint32_t beginTime = HAL_GetTick();
+  25:Src/ESPControl.c **** 	uint8_t success = 1; 
+  26:Src/ESPControl.c **** 	while(strstr(pData, "^^") == NULL){
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccGy6iYM.s 			page 2
+
+
+  27:Src/ESPControl.c **** 		HAL_Delay(100);
+  28:Src/ESPControl.c **** 		if(HAL_GetTick() - beginTime > 16000){
+  29:Src/ESPControl.c **** 			AddException('6');
+  30:Src/ESPControl.c **** 			strcpy(pData, "No response");
+  31:Src/ESPControl.c **** 			HAL_UART_AbortReceive_IT(huart);
+  32:Src/ESPControl.c **** 			if(resetOnExept == 1)
+  33:Src/ESPControl.c **** 				ResetESP(huart);
+  34:Src/ESPControl.c **** 			success = 0;
+  35:Src/ESPControl.c **** 			return;
+  36:Src/ESPControl.c **** 		}
+  37:Src/ESPControl.c **** 	}
+  38:Src/ESPControl.c **** 	if(success == 1) {
+  39:Src/ESPControl.c **** 		HAL_UART_AbortReceive_IT(huart);
+  40:Src/ESPControl.c **** 		uint8_t len = strlen(pData);
+  41:Src/ESPControl.c **** 		*(pData + len-1) = '\0';
+  42:Src/ESPControl.c **** 		*(pData + len-2) = '\0';
+  43:Src/ESPControl.c **** 		DelException('6');
+  44:Src/ESPControl.c **** 	}
+  45:Src/ESPControl.c **** }
+  46:Src/ESPControl.c **** 
+  47:Src/ESPControl.c **** void WakeupESP(RTC_HandleTypeDef *hrtc, RTC_TimeTypeDef *realTime, UART_HandleTypeDef *huart)
+  48:Src/ESPControl.c **** {
+  49:Src/ESPControl.c **** 	HAL_GPIO_WritePin(ESP_Wakeup_GPIO_Port, ESP_Wakeup_Pin, GPIO_PIN_RESET);
+  50:Src/ESPControl.c **** 	HAL_Delay(5);
+  51:Src/ESPControl.c **** 	HAL_GPIO_WritePin(ESP_Wakeup_GPIO_Port, ESP_Wakeup_Pin, GPIO_PIN_SET);
+  52:Src/ESPControl.c **** 	
+  53:Src/ESPControl.c **** 	char responseRx[15] = {0};
+  54:Src/ESPControl.c **** 	RxESP(huart, 1, responseRx, 15);
+  55:Src/ESPControl.c **** 	if(strcmp(responseRx, "No response") != 0) {
+  56:Src/ESPControl.c **** 		RxESP(huart, 1, responseRx, 15);
+  57:Src/ESPControl.c **** 		if(strcmp(responseRx, "Error 1") != 0) {
+  58:Src/ESPControl.c **** 			DelException('1');
+  59:Src/ESPControl.c **** 			InitRealTime(huart, hrtc, realTime);
+  60:Src/ESPControl.c **** 		}else
+  61:Src/ESPControl.c **** 			AddException('1');
+  62:Src/ESPControl.c **** 	}
+  63:Src/ESPControl.c **** }
+  64:Src/ESPControl.c **** 
+  65:Src/ESPControl.c **** void SleepESP(UART_HandleTypeDef *huart)
+  66:Src/ESPControl.c **** {
+  67:Src/ESPControl.c **** 	char commandToSend[2] = "4";
+  68:Src/ESPControl.c **** 	char responseRx[10] = {0};
+  69:Src/ESPControl.c **** 	TxESP(huart, commandToSend, responseRx, 10);
+  70:Src/ESPControl.c **** 	if(strcmp(responseRx, "OK") == 0)
+  71:Src/ESPControl.c **** 		DelException('5');
+  72:Src/ESPControl.c **** 	else
+  73:Src/ESPControl.c **** 		AddException('5');
+  74:Src/ESPControl.c **** }
+  75:Src/ESPControl.c **** 
+  76:Src/ESPControl.c **** void ResetESP(UART_HandleTypeDef *huart)
+  77:Src/ESPControl.c **** {
+  32              		.loc 1 77 1 view -0
+  33              		.cfi_startproc
+  34              		@ args = 0, pretend = 0, frame = 16
+  35              		@ frame_needed = 0, uses_anonymous_args = 0
+  36              		.loc 1 77 1 is_stmt 0 view .LVU1
+  37 0000 30B5     		push	{r4, r5, lr}
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccGy6iYM.s 			page 3
+
+
+  38              	.LCFI0:
+  39              		.cfi_def_cfa_offset 12
+  40              		.cfi_offset 4, -12
+  41              		.cfi_offset 5, -8
+  42              		.cfi_offset 14, -4
+  43 0002 85B0     		sub	sp, sp, #20
+  44              	.LCFI1:
+  45              		.cfi_def_cfa_offset 32
+  46 0004 0446     		mov	r4, r0
+  78:Src/ESPControl.c **** 	HAL_GPIO_WritePin(ESP_Reset_GPIO_Port, ESP_Reset_Pin, GPIO_PIN_RESET);
+  47              		.loc 1 78 2 is_stmt 1 view .LVU2
+  48 0006 1E4D     		ldr	r5, .L5
+  49 0008 0022     		movs	r2, #0
+  50 000a 4021     		movs	r1, #64
+  51 000c 2846     		mov	r0, r5
+  52              	.LVL1:
+  53              		.loc 1 78 2 is_stmt 0 view .LVU3
+  54 000e FFF7FEFF 		bl	HAL_GPIO_WritePin
+  55              	.LVL2:
+  79:Src/ESPControl.c **** 	HAL_Delay(5);
+  56              		.loc 1 79 2 is_stmt 1 view .LVU4
+  57 0012 0520     		movs	r0, #5
+  58 0014 FFF7FEFF 		bl	HAL_Delay
+  59              	.LVL3:
+  80:Src/ESPControl.c **** 	HAL_GPIO_WritePin(ESP_Reset_GPIO_Port, ESP_Reset_Pin, GPIO_PIN_SET);
+  60              		.loc 1 80 2 view .LVU5
+  61 0018 0122     		movs	r2, #1
+  62 001a 4021     		movs	r1, #64
+  63 001c 2846     		mov	r0, r5
+  64 001e FFF7FEFF 		bl	HAL_GPIO_WritePin
+  65              	.LVL4:
+  81:Src/ESPControl.c **** 	// Clearing uart from trash
+  82:Src/ESPControl.c **** 	char *tempBuff = calloc(500, sizeof(char));
+  66              		.loc 1 82 2 view .LVU6
+  67              		.loc 1 82 19 is_stmt 0 view .LVU7
+  68 0022 0121     		movs	r1, #1
+  69 0024 4FF4FA70 		mov	r0, #500
+  70 0028 FFF7FEFF 		bl	calloc
+  71              	.LVL5:
+  72 002c 0546     		mov	r5, r0
+  73              	.LVL6:
+  83:Src/ESPControl.c **** 	HAL_UART_Receive_IT(huart,(uint8_t*) tempBuff, 500);
+  74              		.loc 1 83 2 is_stmt 1 view .LVU8
+  75 002e 4FF4FA72 		mov	r2, #500
+  76 0032 0146     		mov	r1, r0
+  77 0034 2046     		mov	r0, r4
+  78              	.LVL7:
+  79              		.loc 1 83 2 is_stmt 0 view .LVU9
+  80 0036 FFF7FEFF 		bl	HAL_UART_Receive_IT
+  81              	.LVL8:
+  84:Src/ESPControl.c **** 	HAL_Delay(500);
+  82              		.loc 1 84 2 is_stmt 1 view .LVU10
+  83 003a 4FF4FA70 		mov	r0, #500
+  84 003e FFF7FEFF 		bl	HAL_Delay
+  85              	.LVL9:
+  85:Src/ESPControl.c **** 	HAL_UART_AbortReceive_IT(huart);
+  86              		.loc 1 85 2 view .LVU11
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccGy6iYM.s 			page 4
+
+
+  87 0042 2046     		mov	r0, r4
+  88 0044 FFF7FEFF 		bl	HAL_UART_AbortReceive_IT
+  89              	.LVL10:
+  86:Src/ESPControl.c **** 	free(tempBuff);
+  90              		.loc 1 86 2 view .LVU12
+  91 0048 2846     		mov	r0, r5
+  92 004a FFF7FEFF 		bl	free
+  93              	.LVL11:
+  87:Src/ESPControl.c **** 	// Internet connection check
+  88:Src/ESPControl.c **** 	char responseRx[15] = {0};
+  94              		.loc 1 88 2 view .LVU13
+  95              		.loc 1 88 7 is_stmt 0 view .LVU14
+  96 004e 0021     		movs	r1, #0
+  97 0050 0091     		str	r1, [sp]
+  98 0052 0191     		str	r1, [sp, #4]
+  99 0054 0291     		str	r1, [sp, #8]
+ 100 0056 CDF80B10 		str	r1, [sp, #11]	@ unaligned
+  89:Src/ESPControl.c **** 	RxESP(huart, 0, responseRx, 15);
+ 101              		.loc 1 89 2 is_stmt 1 view .LVU15
+ 102 005a 0F23     		movs	r3, #15
+ 103 005c 6A46     		mov	r2, sp
+ 104 005e 2046     		mov	r0, r4
+ 105 0060 FFF7FEFF 		bl	RxESP
+ 106              	.LVL12:
+  90:Src/ESPControl.c **** 	if(strcmp(responseRx, "Error 1") != 0) {
+ 107              		.loc 1 90 2 view .LVU16
+ 108              		.loc 1 90 5 is_stmt 0 view .LVU17
+ 109 0064 0749     		ldr	r1, .L5+4
+ 110 0066 6846     		mov	r0, sp
+ 111 0068 FFF7FEFF 		bl	strcmp
+ 112              	.LVL13:
+ 113              		.loc 1 90 4 view .LVU18
+ 114 006c 20B1     		cbz	r0, .L2
+  91:Src/ESPControl.c **** 		DelException('1');
+ 115              		.loc 1 91 3 is_stmt 1 view .LVU19
+ 116 006e 3120     		movs	r0, #49
+ 117 0070 FFF7FEFF 		bl	DelException
+ 118              	.LVL14:
+ 119              	.L1:
+  92:Src/ESPControl.c **** 	}else
+  93:Src/ESPControl.c **** 		AddException('1');
+  94:Src/ESPControl.c **** }
+ 120              		.loc 1 94 1 is_stmt 0 view .LVU20
+ 121 0074 05B0     		add	sp, sp, #20
+ 122              	.LCFI2:
+ 123              		.cfi_remember_state
+ 124              		.cfi_def_cfa_offset 12
+ 125              		@ sp needed
+ 126 0076 30BD     		pop	{r4, r5, pc}
+ 127              	.LVL15:
+ 128              	.L2:
+ 129              	.LCFI3:
+ 130              		.cfi_restore_state
+  93:Src/ESPControl.c **** }
+ 131              		.loc 1 93 3 is_stmt 1 view .LVU21
+ 132 0078 3120     		movs	r0, #49
+ 133 007a FFF7FEFF 		bl	AddException
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccGy6iYM.s 			page 5
+
+
+ 134              	.LVL16:
+ 135              		.loc 1 94 1 is_stmt 0 view .LVU22
+ 136 007e F9E7     		b	.L1
+ 137              	.L6:
+ 138              		.align	2
+ 139              	.L5:
+ 140 0080 00080140 		.word	1073809408
+ 141 0084 00000000 		.word	.LC0
+ 142              		.cfi_endproc
+ 143              	.LFE72:
+ 145              		.section	.rodata.RxESP.str1.4,"aMS",%progbits,1
+ 146              		.align	2
+ 147              	.LC1:
+ 148 0000 4E6F2072 		.ascii	"No response\000"
+ 148      6573706F 
+ 148      6E736500 
+ 149              		.align	2
+ 150              	.LC2:
+ 151 000c 5E5E00   		.ascii	"^^\000"
+ 152              		.section	.text.RxESP,"ax",%progbits
+ 153              		.align	1
+ 154              		.global	RxESP
+ 155              		.syntax unified
+ 156              		.thumb
+ 157              		.thumb_func
+ 158              		.fpu softvfp
+ 160              	RxESP:
+ 161              	.LVL17:
+ 162              	.LFB69:
+  20:Src/ESPControl.c **** 	//while(huart->RxState != HAL_UART_STATE_READY){}
+ 163              		.loc 1 20 1 is_stmt 1 view -0
+ 164              		.cfi_startproc
+ 165              		@ args = 0, pretend = 0, frame = 0
+ 166              		@ frame_needed = 0, uses_anonymous_args = 0
+  20:Src/ESPControl.c **** 	//while(huart->RxState != HAL_UART_STATE_READY){}
+ 167              		.loc 1 20 1 is_stmt 0 view .LVU24
+ 168 0000 F8B5     		push	{r3, r4, r5, r6, r7, lr}
+ 169              	.LCFI4:
+ 170              		.cfi_def_cfa_offset 24
+ 171              		.cfi_offset 3, -24
+ 172              		.cfi_offset 4, -20
+ 173              		.cfi_offset 5, -16
+ 174              		.cfi_offset 6, -12
+ 175              		.cfi_offset 7, -8
+ 176              		.cfi_offset 14, -4
+ 177 0002 0646     		mov	r6, r0
+ 178 0004 0F46     		mov	r7, r1
+ 179 0006 1446     		mov	r4, r2
+  22:Src/ESPControl.c **** 
+ 180              		.loc 1 22 2 is_stmt 1 view .LVU25
+ 181 0008 1A46     		mov	r2, r3
+ 182              	.LVL18:
+  22:Src/ESPControl.c **** 
+ 183              		.loc 1 22 2 is_stmt 0 view .LVU26
+ 184 000a 2146     		mov	r1, r4
+ 185              	.LVL19:
+  22:Src/ESPControl.c **** 
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccGy6iYM.s 			page 6
+
+
+ 186              		.loc 1 22 2 view .LVU27
+ 187 000c FFF7FEFF 		bl	HAL_UART_Receive_IT
+ 188              	.LVL20:
+  24:Src/ESPControl.c **** 	uint8_t success = 1; 
+ 189              		.loc 1 24 2 is_stmt 1 view .LVU28
+  24:Src/ESPControl.c **** 	uint8_t success = 1; 
+ 190              		.loc 1 24 29 is_stmt 0 view .LVU29
+ 191 0010 FFF7FEFF 		bl	HAL_GetTick
+ 192              	.LVL21:
+ 193 0014 0546     		mov	r5, r0
+ 194              	.LVL22:
+  25:Src/ESPControl.c **** 	while(strstr(pData, "^^") == NULL){
+ 195              		.loc 1 25 2 is_stmt 1 view .LVU30
+  26:Src/ESPControl.c **** 		HAL_Delay(100);
+ 196              		.loc 1 26 2 view .LVU31
+ 197              	.L8:
+  26:Src/ESPControl.c **** 		HAL_Delay(100);
+ 198              		.loc 1 26 7 view .LVU32
+  26:Src/ESPControl.c **** 		HAL_Delay(100);
+ 199              		.loc 1 26 8 is_stmt 0 view .LVU33
+ 200 0016 1749     		ldr	r1, .L14
+ 201 0018 2046     		mov	r0, r4
+ 202 001a FFF7FEFF 		bl	strstr
+ 203              	.LVL23:
+  26:Src/ESPControl.c **** 		HAL_Delay(100);
+ 204              		.loc 1 26 7 view .LVU34
+ 205 001e C8B9     		cbnz	r0, .L13
+  27:Src/ESPControl.c **** 		if(HAL_GetTick() - beginTime > 16000){
+ 206              		.loc 1 27 3 is_stmt 1 view .LVU35
+ 207 0020 6420     		movs	r0, #100
+ 208 0022 FFF7FEFF 		bl	HAL_Delay
+ 209              	.LVL24:
+  28:Src/ESPControl.c **** 			AddException('6');
+ 210              		.loc 1 28 3 view .LVU36
+  28:Src/ESPControl.c **** 			AddException('6');
+ 211              		.loc 1 28 6 is_stmt 0 view .LVU37
+ 212 0026 FFF7FEFF 		bl	HAL_GetTick
+ 213              	.LVL25:
+  28:Src/ESPControl.c **** 			AddException('6');
+ 214              		.loc 1 28 20 view .LVU38
+ 215 002a 401B     		subs	r0, r0, r5
+  28:Src/ESPControl.c **** 			AddException('6');
+ 216              		.loc 1 28 5 view .LVU39
+ 217 002c B0F57A5F 		cmp	r0, #16000
+ 218 0030 F1D9     		bls	.L8
+  29:Src/ESPControl.c **** 			strcpy(pData, "No response");
+ 219              		.loc 1 29 4 is_stmt 1 view .LVU40
+ 220 0032 3620     		movs	r0, #54
+ 221 0034 FFF7FEFF 		bl	AddException
+ 222              	.LVL26:
+  30:Src/ESPControl.c **** 			HAL_UART_AbortReceive_IT(huart);
+ 223              		.loc 1 30 4 view .LVU41
+ 224 0038 0F4B     		ldr	r3, .L14+4
+ 225 003a 07CB     		ldmia	r3!, {r0, r1, r2}
+ 226 003c 2060     		str	r0, [r4]	@ unaligned
+ 227 003e 6160     		str	r1, [r4, #4]	@ unaligned
+ 228 0040 A260     		str	r2, [r4, #8]	@ unaligned
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccGy6iYM.s 			page 7
+
+
+  31:Src/ESPControl.c **** 			if(resetOnExept == 1)
+ 229              		.loc 1 31 4 view .LVU42
+ 230 0042 3046     		mov	r0, r6
+ 231 0044 FFF7FEFF 		bl	HAL_UART_AbortReceive_IT
+ 232              	.LVL27:
+  32:Src/ESPControl.c **** 				ResetESP(huart);
+ 233              		.loc 1 32 4 view .LVU43
+  32:Src/ESPControl.c **** 				ResetESP(huart);
+ 234              		.loc 1 32 6 is_stmt 0 view .LVU44
+ 235 0048 012F     		cmp	r7, #1
+ 236 004a 12D1     		bne	.L7
+  33:Src/ESPControl.c **** 			success = 0;
+ 237              		.loc 1 33 5 is_stmt 1 view .LVU45
+ 238 004c 3046     		mov	r0, r6
+ 239 004e FFF7FEFF 		bl	ResetESP
+ 240              	.LVL28:
+  34:Src/ESPControl.c **** 			return;
+ 241              		.loc 1 34 4 view .LVU46
+  35:Src/ESPControl.c **** 		}
+ 242              		.loc 1 35 4 view .LVU47
+ 243 0052 0EE0     		b	.L7
+ 244              	.LVL29:
+ 245              	.L13:
+  38:Src/ESPControl.c **** 		HAL_UART_AbortReceive_IT(huart);
+ 246              		.loc 1 38 2 view .LVU48
+ 247              	.LBB2:
+  39:Src/ESPControl.c **** 		uint8_t len = strlen(pData);
+ 248              		.loc 1 39 3 view .LVU49
+ 249 0054 3046     		mov	r0, r6
+ 250 0056 FFF7FEFF 		bl	HAL_UART_AbortReceive_IT
+ 251              	.LVL30:
+  40:Src/ESPControl.c **** 		*(pData + len-1) = '\0';
+ 252              		.loc 1 40 3 view .LVU50
+  40:Src/ESPControl.c **** 		*(pData + len-1) = '\0';
+ 253              		.loc 1 40 17 is_stmt 0 view .LVU51
+ 254 005a 2046     		mov	r0, r4
+ 255 005c FFF7FEFF 		bl	strlen
+ 256              	.LVL31:
+  41:Src/ESPControl.c **** 		*(pData + len-2) = '\0';
+ 257              		.loc 1 41 3 is_stmt 1 view .LVU52
+ 258 0060 C0B2     		uxtb	r0, r0
+  41:Src/ESPControl.c **** 		*(pData + len-2) = '\0';
+ 259              		.loc 1 41 16 is_stmt 0 view .LVU53
+ 260 0062 421E     		subs	r2, r0, #1
+  41:Src/ESPControl.c **** 		*(pData + len-2) = '\0';
+ 261              		.loc 1 41 20 view .LVU54
+ 262 0064 0023     		movs	r3, #0
+ 263 0066 A354     		strb	r3, [r4, r2]
+  42:Src/ESPControl.c **** 		DelException('6');
+ 264              		.loc 1 42 3 is_stmt 1 view .LVU55
+  42:Src/ESPControl.c **** 		DelException('6');
+ 265              		.loc 1 42 16 is_stmt 0 view .LVU56
+ 266 0068 0238     		subs	r0, r0, #2
+ 267              	.LVL32:
+  42:Src/ESPControl.c **** 		DelException('6');
+ 268              		.loc 1 42 20 view .LVU57
+ 269 006a 2354     		strb	r3, [r4, r0]
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccGy6iYM.s 			page 8
+
+
+  43:Src/ESPControl.c **** 	}
+ 270              		.loc 1 43 3 is_stmt 1 view .LVU58
+ 271 006c 3620     		movs	r0, #54
+ 272              	.LVL33:
+  43:Src/ESPControl.c **** 	}
+ 273              		.loc 1 43 3 is_stmt 0 view .LVU59
+ 274 006e FFF7FEFF 		bl	DelException
+ 275              	.LVL34:
+ 276              	.L7:
+  43:Src/ESPControl.c **** 	}
+ 277              		.loc 1 43 3 view .LVU60
+ 278              	.LBE2:
+  45:Src/ESPControl.c **** 
+ 279              		.loc 1 45 1 view .LVU61
+ 280 0072 F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+ 281              	.LVL35:
+ 282              	.L15:
+  45:Src/ESPControl.c **** 
+ 283              		.loc 1 45 1 view .LVU62
+ 284              		.align	2
+ 285              	.L14:
+ 286 0074 0C000000 		.word	.LC2
+ 287 0078 00000000 		.word	.LC1
+ 288              		.cfi_endproc
+ 289              	.LFE69:
+ 291              		.section	.rodata.TxESP.str1.4,"aMS",%progbits,1
+ 292              		.align	2
+ 293              	.LC3:
+ 294 0000 3000     		.ascii	"0\000"
+ 295              		.section	.text.TxESP,"ax",%progbits
+ 296              		.align	1
+ 297              		.global	TxESP
+ 298              		.syntax unified
+ 299              		.thumb
+ 300              		.thumb_func
+ 301              		.fpu softvfp
+ 303              	TxESP:
+ 304              	.LVL36:
+ 305              	.LFB68:
+   5:Src/ESPControl.c **** 	uint8_t cmdSize = strlen(command); 
+ 306              		.loc 1 5 1 is_stmt 1 view -0
+ 307              		.cfi_startproc
+ 308              		@ args = 0, pretend = 0, frame = 0
+ 309              		@ frame_needed = 0, uses_anonymous_args = 0
+   5:Src/ESPControl.c **** 	uint8_t cmdSize = strlen(command); 
+ 310              		.loc 1 5 1 is_stmt 0 view .LVU64
+ 311 0000 2DE9F843 		push	{r3, r4, r5, r6, r7, r8, r9, lr}
+ 312              	.LCFI5:
+ 313              		.cfi_def_cfa_offset 32
+ 314              		.cfi_offset 3, -32
+ 315              		.cfi_offset 4, -28
+ 316              		.cfi_offset 5, -24
+ 317              		.cfi_offset 6, -20
+ 318              		.cfi_offset 7, -16
+ 319              		.cfi_offset 8, -12
+ 320              		.cfi_offset 9, -8
+ 321              		.cfi_offset 14, -4
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccGy6iYM.s 			page 9
+
+
+ 322 0004 0646     		mov	r6, r0
+ 323 0006 0F46     		mov	r7, r1
+ 324 0008 1546     		mov	r5, r2
+ 325 000a 9946     		mov	r9, r3
+   6:Src/ESPControl.c **** 
+ 326              		.loc 1 6 2 is_stmt 1 view .LVU65
+   6:Src/ESPControl.c **** 
+ 327              		.loc 1 6 20 is_stmt 0 view .LVU66
+ 328 000c 0846     		mov	r0, r1
+ 329              	.LVL37:
+   6:Src/ESPControl.c **** 
+ 330              		.loc 1 6 20 view .LVU67
+ 331 000e FFF7FEFF 		bl	strlen
+ 332              	.LVL38:
+   6:Src/ESPControl.c **** 
+ 333              		.loc 1 6 10 view .LVU68
+ 334 0012 5FFA80F8 		uxtb	r8, r0
+ 335              	.LVL39:
+   8:Src/ESPControl.c **** 		HAL_Delay(1000);
+ 336              		.loc 1 8 2 is_stmt 1 view .LVU69
+ 337              	.LBB3:
+   8:Src/ESPControl.c **** 		HAL_Delay(1000);
+ 338              		.loc 1 8 6 view .LVU70
+   8:Src/ESPControl.c **** 		HAL_Delay(1000);
+ 339              		.loc 1 8 14 is_stmt 0 view .LVU71
+ 340 0016 0024     		movs	r4, #0
+ 341              	.LVL40:
+ 342              	.L17:
+   8:Src/ESPControl.c **** 		HAL_Delay(1000);
+ 343              		.loc 1 8 21 is_stmt 1 discriminator 1 view .LVU72
+   8:Src/ESPControl.c **** 		HAL_Delay(1000);
+ 344              		.loc 1 8 2 is_stmt 0 discriminator 1 view .LVU73
+ 345 0018 012C     		cmp	r4, #1
+ 346 001a 1BD8     		bhi	.L16
+   9:Src/ESPControl.c **** 		HAL_UART_Transmit(huart, (uint8_t*)command, (uint16_t)cmdSize, 0xFFFF);
+ 347              		.loc 1 9 3 is_stmt 1 view .LVU74
+ 348 001c 4FF47A70 		mov	r0, #1000
+ 349 0020 FFF7FEFF 		bl	HAL_Delay
+ 350              	.LVL41:
+  10:Src/ESPControl.c **** 		RxESP(huart, 1, pData, Size);
+ 351              		.loc 1 10 3 view .LVU75
+ 352 0024 4FF6FF73 		movw	r3, #65535
+ 353 0028 4246     		mov	r2, r8
+ 354 002a 3946     		mov	r1, r7
+ 355 002c 3046     		mov	r0, r6
+ 356 002e FFF7FEFF 		bl	HAL_UART_Transmit
+ 357              	.LVL42:
+  11:Src/ESPControl.c **** 		if(strcmp(pData, "No response") == 0)
+ 358              		.loc 1 11 3 view .LVU76
+ 359 0032 4B46     		mov	r3, r9
+ 360 0034 2A46     		mov	r2, r5
+ 361 0036 0121     		movs	r1, #1
+ 362 0038 3046     		mov	r0, r6
+ 363 003a FFF7FEFF 		bl	RxESP
+ 364              	.LVL43:
+  12:Src/ESPControl.c **** 			strcpy(pData, "0");
+ 365              		.loc 1 12 3 view .LVU77
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccGy6iYM.s 			page 10
+
+
+  12:Src/ESPControl.c **** 			strcpy(pData, "0");
+ 366              		.loc 1 12 6 is_stmt 0 view .LVU78
+ 367 003e 0649     		ldr	r1, .L21
+ 368 0040 2846     		mov	r0, r5
+ 369 0042 FFF7FEFF 		bl	strcmp
+ 370              	.LVL44:
+  12:Src/ESPControl.c **** 			strcpy(pData, "0");
+ 371              		.loc 1 12 5 view .LVU79
+ 372 0046 28B9     		cbnz	r0, .L16
+  13:Src/ESPControl.c **** 		else
+ 373              		.loc 1 13 4 is_stmt 1 discriminator 2 view .LVU80
+ 374 0048 044B     		ldr	r3, .L21+4
+ 375 004a 1B88     		ldrh	r3, [r3]	@ unaligned
+ 376 004c 2B80     		strh	r3, [r5]	@ unaligned
+   8:Src/ESPControl.c **** 		HAL_Delay(1000);
+ 377              		.loc 1 8 26 discriminator 2 view .LVU81
+   8:Src/ESPControl.c **** 		HAL_Delay(1000);
+ 378              		.loc 1 8 27 is_stmt 0 discriminator 2 view .LVU82
+ 379 004e 0134     		adds	r4, r4, #1
+ 380              	.LVL45:
+   8:Src/ESPControl.c **** 		HAL_Delay(1000);
+ 381              		.loc 1 8 27 discriminator 2 view .LVU83
+ 382 0050 E4B2     		uxtb	r4, r4
+ 383              	.LVL46:
+   8:Src/ESPControl.c **** 		HAL_Delay(1000);
+ 384              		.loc 1 8 27 discriminator 2 view .LVU84
+ 385 0052 E1E7     		b	.L17
+ 386              	.L16:
+   8:Src/ESPControl.c **** 		HAL_Delay(1000);
+ 387              		.loc 1 8 27 discriminator 2 view .LVU85
+ 388              	.LBE3:
+  17:Src/ESPControl.c **** 
+ 389              		.loc 1 17 1 view .LVU86
+ 390 0054 BDE8F883 		pop	{r3, r4, r5, r6, r7, r8, r9, pc}
+ 391              	.LVL47:
+ 392              	.L22:
+  17:Src/ESPControl.c **** 
+ 393              		.loc 1 17 1 view .LVU87
+ 394              		.align	2
+ 395              	.L21:
+ 396 0058 00000000 		.word	.LC1
+ 397 005c 00000000 		.word	.LC3
+ 398              		.cfi_endproc
+ 399              	.LFE68:
+ 401              		.section	.rodata.SleepESP.str1.4,"aMS",%progbits,1
+ 402              		.align	2
+ 403              	.LC4:
+ 404 0000 4F4B00   		.ascii	"OK\000"
+ 405              		.section	.text.SleepESP,"ax",%progbits
+ 406              		.align	1
+ 407              		.global	SleepESP
+ 408              		.syntax unified
+ 409              		.thumb
+ 410              		.thumb_func
+ 411              		.fpu softvfp
+ 413              	SleepESP:
+ 414              	.LVL48:
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccGy6iYM.s 			page 11
+
+
+ 415              	.LFB71:
+  66:Src/ESPControl.c **** 	char commandToSend[2] = "4";
+ 416              		.loc 1 66 1 is_stmt 1 view -0
+ 417              		.cfi_startproc
+ 418              		@ args = 0, pretend = 0, frame = 16
+ 419              		@ frame_needed = 0, uses_anonymous_args = 0
+  66:Src/ESPControl.c **** 	char commandToSend[2] = "4";
+ 420              		.loc 1 66 1 is_stmt 0 view .LVU89
+ 421 0000 00B5     		push	{lr}
+ 422              	.LCFI6:
+ 423              		.cfi_def_cfa_offset 4
+ 424              		.cfi_offset 14, -4
+ 425 0002 85B0     		sub	sp, sp, #20
+ 426              	.LCFI7:
+ 427              		.cfi_def_cfa_offset 24
+  67:Src/ESPControl.c **** 	char responseRx[10] = {0};
+ 428              		.loc 1 67 2 is_stmt 1 view .LVU90
+  67:Src/ESPControl.c **** 	char responseRx[10] = {0};
+ 429              		.loc 1 67 7 is_stmt 0 view .LVU91
+ 430 0004 3423     		movs	r3, #52
+ 431 0006 ADF80C30 		strh	r3, [sp, #12]	@ movhi
+  68:Src/ESPControl.c **** 	TxESP(huart, commandToSend, responseRx, 10);
+ 432              		.loc 1 68 2 is_stmt 1 view .LVU92
+  68:Src/ESPControl.c **** 	TxESP(huart, commandToSend, responseRx, 10);
+ 433              		.loc 1 68 7 is_stmt 0 view .LVU93
+ 434 000a 0023     		movs	r3, #0
+ 435 000c 0093     		str	r3, [sp]
+ 436 000e 0193     		str	r3, [sp, #4]
+ 437 0010 ADF80830 		strh	r3, [sp, #8]	@ movhi
+  69:Src/ESPControl.c **** 	if(strcmp(responseRx, "OK") == 0)
+ 438              		.loc 1 69 2 is_stmt 1 view .LVU94
+ 439 0014 0A23     		movs	r3, #10
+ 440 0016 6A46     		mov	r2, sp
+ 441 0018 03A9     		add	r1, sp, #12
+ 442 001a FFF7FEFF 		bl	TxESP
+ 443              	.LVL49:
+  70:Src/ESPControl.c **** 		DelException('5');
+ 444              		.loc 1 70 2 view .LVU95
+  70:Src/ESPControl.c **** 		DelException('5');
+ 445              		.loc 1 70 5 is_stmt 0 view .LVU96
+ 446 001e 0749     		ldr	r1, .L27
+ 447 0020 6846     		mov	r0, sp
+ 448 0022 FFF7FEFF 		bl	strcmp
+ 449              	.LVL50:
+  70:Src/ESPControl.c **** 		DelException('5');
+ 450              		.loc 1 70 4 view .LVU97
+ 451 0026 28B9     		cbnz	r0, .L24
+  71:Src/ESPControl.c **** 	else
+ 452              		.loc 1 71 3 is_stmt 1 view .LVU98
+ 453 0028 3520     		movs	r0, #53
+ 454 002a FFF7FEFF 		bl	DelException
+ 455              	.LVL51:
+ 456              	.L23:
+  74:Src/ESPControl.c **** 
+ 457              		.loc 1 74 1 is_stmt 0 view .LVU99
+ 458 002e 05B0     		add	sp, sp, #20
+ 459              	.LCFI8:
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccGy6iYM.s 			page 12
+
+
+ 460              		.cfi_remember_state
+ 461              		.cfi_def_cfa_offset 4
+ 462              		@ sp needed
+ 463 0030 5DF804FB 		ldr	pc, [sp], #4
+ 464              	.L24:
+ 465              	.LCFI9:
+ 466              		.cfi_restore_state
+  73:Src/ESPControl.c **** }
+ 467              		.loc 1 73 3 is_stmt 1 view .LVU100
+ 468 0034 3520     		movs	r0, #53
+ 469 0036 FFF7FEFF 		bl	AddException
+ 470              	.LVL52:
+  74:Src/ESPControl.c **** 
+ 471              		.loc 1 74 1 is_stmt 0 view .LVU101
+ 472 003a F8E7     		b	.L23
+ 473              	.L28:
+ 474              		.align	2
+ 475              	.L27:
+ 476 003c 00000000 		.word	.LC4
+ 477              		.cfi_endproc
+ 478              	.LFE71:
+ 480              		.section	.rodata.InitRealTime.str1.4,"aMS",%progbits,1
+ 481              		.align	2
+ 482              	.LC5:
+ 483 0000 4572726F 		.ascii	"Error 3\000"
+ 483      72203300 
+ 484              		.align	2
+ 485              	.LC6:
+ 486 0008 3A00     		.ascii	":\000"
+ 487              		.section	.text.InitRealTime,"ax",%progbits
+ 488              		.align	1
+ 489              		.global	InitRealTime
+ 490              		.syntax unified
+ 491              		.thumb
+ 492              		.thumb_func
+ 493              		.fpu softvfp
+ 495              	InitRealTime:
+ 496              	.LVL53:
+ 497              	.LFB73:
+  95:Src/ESPControl.c **** 
+  96:Src/ESPControl.c **** void InitRealTime(UART_HandleTypeDef *huart, RTC_HandleTypeDef *hrtc, RTC_TimeTypeDef *realTime)
+  97:Src/ESPControl.c **** {
+ 498              		.loc 1 97 1 is_stmt 1 view -0
+ 499              		.cfi_startproc
+ 500              		@ args = 0, pretend = 0, frame = 24
+ 501              		@ frame_needed = 0, uses_anonymous_args = 0
+ 502              		.loc 1 97 1 is_stmt 0 view .LVU103
+ 503 0000 70B5     		push	{r4, r5, r6, lr}
+ 504              	.LCFI10:
+ 505              		.cfi_def_cfa_offset 16
+ 506              		.cfi_offset 4, -16
+ 507              		.cfi_offset 5, -12
+ 508              		.cfi_offset 6, -8
+ 509              		.cfi_offset 14, -4
+ 510 0002 86B0     		sub	sp, sp, #24
+ 511              	.LCFI11:
+ 512              		.cfi_def_cfa_offset 40
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccGy6iYM.s 			page 13
+
+
+ 513 0004 0D46     		mov	r5, r1
+ 514 0006 1446     		mov	r4, r2
+  98:Src/ESPControl.c **** 	char commandToSend[2] = "1";
+ 515              		.loc 1 98 2 is_stmt 1 view .LVU104
+ 516              		.loc 1 98 7 is_stmt 0 view .LVU105
+ 517 0008 3123     		movs	r3, #49
+ 518 000a ADF81430 		strh	r3, [sp, #20]	@ movhi
+  99:Src/ESPControl.c **** 	char responseRx[15] = {0};
+ 519              		.loc 1 99 2 is_stmt 1 view .LVU106
+ 520              		.loc 1 99 7 is_stmt 0 view .LVU107
+ 521 000e 0023     		movs	r3, #0
+ 522 0010 0193     		str	r3, [sp, #4]
+ 523 0012 0293     		str	r3, [sp, #8]
+ 524 0014 0393     		str	r3, [sp, #12]
+ 525 0016 CDF80F30 		str	r3, [sp, #15]	@ unaligned
+ 100:Src/ESPControl.c **** 	TxESP(huart, commandToSend, responseRx, 15);
+ 526              		.loc 1 100 2 is_stmt 1 view .LVU108
+ 527 001a 0F23     		movs	r3, #15
+ 528 001c 01AA     		add	r2, sp, #4
+ 529              	.LVL54:
+ 530              		.loc 1 100 2 is_stmt 0 view .LVU109
+ 531 001e 05A9     		add	r1, sp, #20
+ 532              	.LVL55:
+ 533              		.loc 1 100 2 view .LVU110
+ 534 0020 FFF7FEFF 		bl	TxESP
+ 535              	.LVL56:
+ 101:Src/ESPControl.c **** 	if(strcmp(responseRx, "Error 3") != 0 && strcmp(responseRx, "0") != 0) {
+ 536              		.loc 1 101 2 is_stmt 1 view .LVU111
+ 537              		.loc 1 101 5 is_stmt 0 view .LVU112
+ 538 0024 1549     		ldr	r1, .L34
+ 539 0026 01A8     		add	r0, sp, #4
+ 540 0028 FFF7FEFF 		bl	strcmp
+ 541              	.LVL57:
+ 542              		.loc 1 101 4 view .LVU113
+ 543 002c 20B1     		cbz	r0, .L30
+ 544              		.loc 1 101 43 discriminator 1 view .LVU114
+ 545 002e 1449     		ldr	r1, .L34+4
+ 546 0030 01A8     		add	r0, sp, #4
+ 547 0032 FFF7FEFF 		bl	strcmp
+ 548              	.LVL58:
+ 549              		.loc 1 101 40 discriminator 1 view .LVU115
+ 550 0036 20B9     		cbnz	r0, .L33
+ 551              	.L30:
+ 102:Src/ESPControl.c **** 		DelException('2');
+ 103:Src/ESPControl.c **** 		realTime->Hours = atoi(strtok(responseRx,":"));
+ 104:Src/ESPControl.c **** 		realTime->Minutes = atoi(strtok(NULL,":"));
+ 105:Src/ESPControl.c **** 		realTime->Seconds = 0;
+ 106:Src/ESPControl.c **** 		if (HAL_RTC_SetTime(hrtc, realTime, RTC_FORMAT_BIN) != HAL_OK)
+ 107:Src/ESPControl.c **** 		{
+ 108:Src/ESPControl.c **** 			Error_Handler();
+ 109:Src/ESPControl.c **** 		}
+ 110:Src/ESPControl.c **** 	}else
+ 111:Src/ESPControl.c **** 		AddException('2');
+ 552              		.loc 1 111 3 is_stmt 1 view .LVU116
+ 553 0038 3220     		movs	r0, #50
+ 554 003a FFF7FEFF 		bl	AddException
+ 555              	.LVL59:
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccGy6iYM.s 			page 14
+
+
+ 556              	.L29:
+ 112:Src/ESPControl.c **** }
+ 557              		.loc 1 112 1 is_stmt 0 view .LVU117
+ 558 003e 06B0     		add	sp, sp, #24
+ 559              	.LCFI12:
+ 560              		.cfi_remember_state
+ 561              		.cfi_def_cfa_offset 16
+ 562              		@ sp needed
+ 563 0040 70BD     		pop	{r4, r5, r6, pc}
+ 564              	.LVL60:
+ 565              	.L33:
+ 566              	.LCFI13:
+ 567              		.cfi_restore_state
+ 102:Src/ESPControl.c **** 		DelException('2');
+ 568              		.loc 1 102 3 is_stmt 1 view .LVU118
+ 569 0042 3220     		movs	r0, #50
+ 570 0044 FFF7FEFF 		bl	DelException
+ 571              	.LVL61:
+ 103:Src/ESPControl.c **** 		realTime->Minutes = atoi(strtok(NULL,":"));
+ 572              		.loc 1 103 3 view .LVU119
+ 103:Src/ESPControl.c **** 		realTime->Minutes = atoi(strtok(NULL,":"));
+ 573              		.loc 1 103 26 is_stmt 0 view .LVU120
+ 574 0048 0E4E     		ldr	r6, .L34+8
+ 575 004a 3146     		mov	r1, r6
+ 576 004c 01A8     		add	r0, sp, #4
+ 577 004e FFF7FEFF 		bl	strtok
+ 578              	.LVL62:
+ 103:Src/ESPControl.c **** 		realTime->Minutes = atoi(strtok(NULL,":"));
+ 579              		.loc 1 103 21 view .LVU121
+ 580 0052 FFF7FEFF 		bl	atoi
+ 581              	.LVL63:
+ 103:Src/ESPControl.c **** 		realTime->Minutes = atoi(strtok(NULL,":"));
+ 582              		.loc 1 103 19 view .LVU122
+ 583 0056 2070     		strb	r0, [r4]
+ 104:Src/ESPControl.c **** 		realTime->Seconds = 0;
+ 584              		.loc 1 104 3 is_stmt 1 view .LVU123
+ 104:Src/ESPControl.c **** 		realTime->Seconds = 0;
+ 585              		.loc 1 104 28 is_stmt 0 view .LVU124
+ 586 0058 3146     		mov	r1, r6
+ 587 005a 0020     		movs	r0, #0
+ 588 005c FFF7FEFF 		bl	strtok
+ 589              	.LVL64:
+ 104:Src/ESPControl.c **** 		realTime->Seconds = 0;
+ 590              		.loc 1 104 23 view .LVU125
+ 591 0060 FFF7FEFF 		bl	atoi
+ 592              	.LVL65:
+ 104:Src/ESPControl.c **** 		realTime->Seconds = 0;
+ 593              		.loc 1 104 21 view .LVU126
+ 594 0064 6070     		strb	r0, [r4, #1]
+ 105:Src/ESPControl.c **** 		if (HAL_RTC_SetTime(hrtc, realTime, RTC_FORMAT_BIN) != HAL_OK)
+ 595              		.loc 1 105 3 is_stmt 1 view .LVU127
+ 105:Src/ESPControl.c **** 		if (HAL_RTC_SetTime(hrtc, realTime, RTC_FORMAT_BIN) != HAL_OK)
+ 596              		.loc 1 105 21 is_stmt 0 view .LVU128
+ 597 0066 0022     		movs	r2, #0
+ 598 0068 A270     		strb	r2, [r4, #2]
+ 106:Src/ESPControl.c **** 		{
+ 599              		.loc 1 106 3 is_stmt 1 view .LVU129
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccGy6iYM.s 			page 15
+
+
+ 106:Src/ESPControl.c **** 		{
+ 600              		.loc 1 106 7 is_stmt 0 view .LVU130
+ 601 006a 2146     		mov	r1, r4
+ 602 006c 2846     		mov	r0, r5
+ 603 006e FFF7FEFF 		bl	HAL_RTC_SetTime
+ 604              	.LVL66:
+ 106:Src/ESPControl.c **** 		{
+ 605              		.loc 1 106 6 view .LVU131
+ 606 0072 0028     		cmp	r0, #0
+ 607 0074 E3D0     		beq	.L29
+ 108:Src/ESPControl.c **** 		}
+ 608              		.loc 1 108 4 is_stmt 1 view .LVU132
+ 609 0076 FFF7FEFF 		bl	Error_Handler
+ 610              	.LVL67:
+ 611 007a E0E7     		b	.L29
+ 612              	.L35:
+ 613              		.align	2
+ 614              	.L34:
+ 615 007c 00000000 		.word	.LC5
+ 616 0080 00000000 		.word	.LC3
+ 617 0084 08000000 		.word	.LC6
+ 618              		.cfi_endproc
+ 619              	.LFE73:
+ 621              		.section	.text.WakeupESP,"ax",%progbits
+ 622              		.align	1
+ 623              		.global	WakeupESP
+ 624              		.syntax unified
+ 625              		.thumb
+ 626              		.thumb_func
+ 627              		.fpu softvfp
+ 629              	WakeupESP:
+ 630              	.LVL68:
+ 631              	.LFB70:
+  48:Src/ESPControl.c **** 	HAL_GPIO_WritePin(ESP_Wakeup_GPIO_Port, ESP_Wakeup_Pin, GPIO_PIN_RESET);
+ 632              		.loc 1 48 1 view -0
+ 633              		.cfi_startproc
+ 634              		@ args = 0, pretend = 0, frame = 16
+ 635              		@ frame_needed = 0, uses_anonymous_args = 0
+  48:Src/ESPControl.c **** 	HAL_GPIO_WritePin(ESP_Wakeup_GPIO_Port, ESP_Wakeup_Pin, GPIO_PIN_RESET);
+ 636              		.loc 1 48 1 is_stmt 0 view .LVU134
+ 637 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+ 638              	.LCFI14:
+ 639              		.cfi_def_cfa_offset 20
+ 640              		.cfi_offset 4, -20
+ 641              		.cfi_offset 5, -16
+ 642              		.cfi_offset 6, -12
+ 643              		.cfi_offset 7, -8
+ 644              		.cfi_offset 14, -4
+ 645 0002 85B0     		sub	sp, sp, #20
+ 646              	.LCFI15:
+ 647              		.cfi_def_cfa_offset 40
+ 648 0004 0746     		mov	r7, r0
+ 649 0006 0D46     		mov	r5, r1
+ 650 0008 1446     		mov	r4, r2
+  49:Src/ESPControl.c **** 	HAL_Delay(5);
+ 651              		.loc 1 49 2 is_stmt 1 view .LVU135
+ 652 000a 1C4E     		ldr	r6, .L41
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccGy6iYM.s 			page 16
+
+
+ 653 000c 0022     		movs	r2, #0
+ 654              	.LVL69:
+  49:Src/ESPControl.c **** 	HAL_Delay(5);
+ 655              		.loc 1 49 2 is_stmt 0 view .LVU136
+ 656 000e 2021     		movs	r1, #32
+ 657              	.LVL70:
+  49:Src/ESPControl.c **** 	HAL_Delay(5);
+ 658              		.loc 1 49 2 view .LVU137
+ 659 0010 3046     		mov	r0, r6
+ 660              	.LVL71:
+  49:Src/ESPControl.c **** 	HAL_Delay(5);
+ 661              		.loc 1 49 2 view .LVU138
+ 662 0012 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 663              	.LVL72:
+  50:Src/ESPControl.c **** 	HAL_GPIO_WritePin(ESP_Wakeup_GPIO_Port, ESP_Wakeup_Pin, GPIO_PIN_SET);
+ 664              		.loc 1 50 2 is_stmt 1 view .LVU139
+ 665 0016 0520     		movs	r0, #5
+ 666 0018 FFF7FEFF 		bl	HAL_Delay
+ 667              	.LVL73:
+  51:Src/ESPControl.c **** 	
+ 668              		.loc 1 51 2 view .LVU140
+ 669 001c 0122     		movs	r2, #1
+ 670 001e 2021     		movs	r1, #32
+ 671 0020 3046     		mov	r0, r6
+ 672 0022 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 673              	.LVL74:
+  53:Src/ESPControl.c **** 	RxESP(huart, 1, responseRx, 15);
+ 674              		.loc 1 53 2 view .LVU141
+  53:Src/ESPControl.c **** 	RxESP(huart, 1, responseRx, 15);
+ 675              		.loc 1 53 7 is_stmt 0 view .LVU142
+ 676 0026 0023     		movs	r3, #0
+ 677 0028 0093     		str	r3, [sp]
+ 678 002a 0193     		str	r3, [sp, #4]
+ 679 002c 0293     		str	r3, [sp, #8]
+ 680 002e CDF80B30 		str	r3, [sp, #11]	@ unaligned
+  54:Src/ESPControl.c **** 	if(strcmp(responseRx, "No response") != 0) {
+ 681              		.loc 1 54 2 is_stmt 1 view .LVU143
+ 682 0032 0F23     		movs	r3, #15
+ 683 0034 6A46     		mov	r2, sp
+ 684 0036 0121     		movs	r1, #1
+ 685 0038 2046     		mov	r0, r4
+ 686 003a FFF7FEFF 		bl	RxESP
+ 687              	.LVL75:
+  55:Src/ESPControl.c **** 		RxESP(huart, 1, responseRx, 15);
+ 688              		.loc 1 55 2 view .LVU144
+  55:Src/ESPControl.c **** 		RxESP(huart, 1, responseRx, 15);
+ 689              		.loc 1 55 5 is_stmt 0 view .LVU145
+ 690 003e 1049     		ldr	r1, .L41+4
+ 691 0040 6846     		mov	r0, sp
+ 692 0042 FFF7FEFF 		bl	strcmp
+ 693              	.LVL76:
+  55:Src/ESPControl.c **** 		RxESP(huart, 1, responseRx, 15);
+ 694              		.loc 1 55 4 view .LVU146
+ 695 0046 08B9     		cbnz	r0, .L40
+ 696              	.L36:
+  63:Src/ESPControl.c **** 
+ 697              		.loc 1 63 1 view .LVU147
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccGy6iYM.s 			page 17
+
+
+ 698 0048 05B0     		add	sp, sp, #20
+ 699              	.LCFI16:
+ 700              		.cfi_remember_state
+ 701              		.cfi_def_cfa_offset 20
+ 702              		@ sp needed
+ 703 004a F0BD     		pop	{r4, r5, r6, r7, pc}
+ 704              	.LVL77:
+ 705              	.L40:
+ 706              	.LCFI17:
+ 707              		.cfi_restore_state
+  56:Src/ESPControl.c **** 		if(strcmp(responseRx, "Error 1") != 0) {
+ 708              		.loc 1 56 3 is_stmt 1 view .LVU148
+ 709 004c 0F23     		movs	r3, #15
+ 710 004e 6A46     		mov	r2, sp
+ 711 0050 0121     		movs	r1, #1
+ 712 0052 2046     		mov	r0, r4
+ 713 0054 FFF7FEFF 		bl	RxESP
+ 714              	.LVL78:
+  57:Src/ESPControl.c **** 			DelException('1');
+ 715              		.loc 1 57 3 view .LVU149
+  57:Src/ESPControl.c **** 			DelException('1');
+ 716              		.loc 1 57 6 is_stmt 0 view .LVU150
+ 717 0058 0A49     		ldr	r1, .L41+8
+ 718 005a 6846     		mov	r0, sp
+ 719 005c FFF7FEFF 		bl	strcmp
+ 720              	.LVL79:
+  57:Src/ESPControl.c **** 			DelException('1');
+ 721              		.loc 1 57 5 view .LVU151
+ 722 0060 40B1     		cbz	r0, .L38
+  58:Src/ESPControl.c **** 			InitRealTime(huart, hrtc, realTime);
+ 723              		.loc 1 58 4 is_stmt 1 view .LVU152
+ 724 0062 3120     		movs	r0, #49
+ 725 0064 FFF7FEFF 		bl	DelException
+ 726              	.LVL80:
+  59:Src/ESPControl.c **** 		}else
+ 727              		.loc 1 59 4 view .LVU153
+ 728 0068 2A46     		mov	r2, r5
+ 729 006a 3946     		mov	r1, r7
+ 730 006c 2046     		mov	r0, r4
+ 731 006e FFF7FEFF 		bl	InitRealTime
+ 732              	.LVL81:
+ 733 0072 E9E7     		b	.L36
+ 734              	.L38:
+  61:Src/ESPControl.c **** 	}
+ 735              		.loc 1 61 4 view .LVU154
+ 736 0074 3120     		movs	r0, #49
+ 737 0076 FFF7FEFF 		bl	AddException
+ 738              	.LVL82:
+  63:Src/ESPControl.c **** 
+ 739              		.loc 1 63 1 is_stmt 0 view .LVU155
+ 740 007a E5E7     		b	.L36
+ 741              	.L42:
+ 742              		.align	2
+ 743              	.L41:
+ 744 007c 000C0140 		.word	1073810432
+ 745 0080 00000000 		.word	.LC1
+ 746 0084 00000000 		.word	.LC0
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccGy6iYM.s 			page 18
+
+
+ 747              		.cfi_endproc
+ 748              	.LFE70:
+ 750              		.text
+ 751              	.Letext0:
+ 752              		.file 2 "c:\\users\\user\\.vscode\\extensions\\buzzyelectronics.stm-helper-1.2.9\\armgcc\\arm-none
+ 753              		.file 3 "c:\\users\\user\\.vscode\\extensions\\buzzyelectronics.stm-helper-1.2.9\\armgcc\\arm-none
+ 754              		.file 4 "Drivers/CMSIS/Include/core_cm3.h"
+ 755              		.file 5 "Drivers/CMSIS/Device/ST/STM32F1xx/Include/system_stm32f1xx.h"
+ 756              		.file 6 "Drivers/CMSIS/Device/ST/STM32F1xx/Include/stm32f103xb.h"
+ 757              		.file 7 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_def.h"
+ 758              		.file 8 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_gpio.h"
+ 759              		.file 9 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_dma.h"
+ 760              		.file 10 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_rtc.h"
+ 761              		.file 11 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h"
+ 762              		.file 12 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h"
+ 763              		.file 13 "c:\\users\\user\\.vscode\\extensions\\buzzyelectronics.stm-helper-1.2.9\\armgcc\\arm-non
+ 764              		.file 14 "c:\\users\\user\\.vscode\\extensions\\buzzyelectronics.stm-helper-1.2.9\\armgcc\\arm-non
+ 765              		.file 15 "c:\\users\\user\\.vscode\\extensions\\buzzyelectronics.stm-helper-1.2.9\\armgcc\\lib\\gc
+ 766              		.file 16 "c:\\users\\user\\.vscode\\extensions\\buzzyelectronics.stm-helper-1.2.9\\armgcc\\arm-non
+ 767              		.file 17 "c:\\users\\user\\.vscode\\extensions\\buzzyelectronics.stm-helper-1.2.9\\armgcc\\arm-non
+ 768              		.file 18 "c:\\users\\user\\.vscode\\extensions\\buzzyelectronics.stm-helper-1.2.9\\armgcc\\arm-non
+ 769              		.file 19 "Inc/main.h"
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccGy6iYM.s 			page 19
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 ESPControl.c
+C:\Users\User\AppData\Local\Temp\ccGy6iYM.s:16     .rodata.ResetESP.str1.4:0000000000000000 $d
+C:\Users\User\AppData\Local\Temp\ccGy6iYM.s:20     .text.ResetESP:0000000000000000 $t
+C:\Users\User\AppData\Local\Temp\ccGy6iYM.s:28     .text.ResetESP:0000000000000000 ResetESP
+C:\Users\User\AppData\Local\Temp\ccGy6iYM.s:160    .text.RxESP:0000000000000000 RxESP
+C:\Users\User\AppData\Local\Temp\ccGy6iYM.s:140    .text.ResetESP:0000000000000080 $d
+C:\Users\User\AppData\Local\Temp\ccGy6iYM.s:146    .rodata.RxESP.str1.4:0000000000000000 $d
+C:\Users\User\AppData\Local\Temp\ccGy6iYM.s:153    .text.RxESP:0000000000000000 $t
+C:\Users\User\AppData\Local\Temp\ccGy6iYM.s:286    .text.RxESP:0000000000000074 $d
+C:\Users\User\AppData\Local\Temp\ccGy6iYM.s:292    .rodata.TxESP.str1.4:0000000000000000 $d
+C:\Users\User\AppData\Local\Temp\ccGy6iYM.s:296    .text.TxESP:0000000000000000 $t
+C:\Users\User\AppData\Local\Temp\ccGy6iYM.s:303    .text.TxESP:0000000000000000 TxESP
+C:\Users\User\AppData\Local\Temp\ccGy6iYM.s:396    .text.TxESP:0000000000000058 $d
+C:\Users\User\AppData\Local\Temp\ccGy6iYM.s:402    .rodata.SleepESP.str1.4:0000000000000000 $d
+C:\Users\User\AppData\Local\Temp\ccGy6iYM.s:406    .text.SleepESP:0000000000000000 $t
+C:\Users\User\AppData\Local\Temp\ccGy6iYM.s:413    .text.SleepESP:0000000000000000 SleepESP
+C:\Users\User\AppData\Local\Temp\ccGy6iYM.s:476    .text.SleepESP:000000000000003c $d
+C:\Users\User\AppData\Local\Temp\ccGy6iYM.s:481    .rodata.InitRealTime.str1.4:0000000000000000 $d
+C:\Users\User\AppData\Local\Temp\ccGy6iYM.s:488    .text.InitRealTime:0000000000000000 $t
+C:\Users\User\AppData\Local\Temp\ccGy6iYM.s:495    .text.InitRealTime:0000000000000000 InitRealTime
+C:\Users\User\AppData\Local\Temp\ccGy6iYM.s:615    .text.InitRealTime:000000000000007c $d
+C:\Users\User\AppData\Local\Temp\ccGy6iYM.s:622    .text.WakeupESP:0000000000000000 $t
+C:\Users\User\AppData\Local\Temp\ccGy6iYM.s:629    .text.WakeupESP:0000000000000000 WakeupESP
+C:\Users\User\AppData\Local\Temp\ccGy6iYM.s:744    .text.WakeupESP:000000000000007c $d
+
+UNDEFINED SYMBOLS
+HAL_GPIO_WritePin
+HAL_Delay
+calloc
+HAL_UART_Receive_IT
+HAL_UART_AbortReceive_IT
+free
+strcmp
+DelException
+AddException
+HAL_GetTick
+strstr
+strlen
+HAL_UART_Transmit
+strtok
+atoi
+HAL_RTC_SetTime
+Error_Handler

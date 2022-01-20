@@ -1,0 +1,712 @@
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccdwZp4t.s 			page 1
+
+
+   1              		.cpu cortex-m3
+   2              		.eabi_attribute 20, 1
+   3              		.eabi_attribute 21, 1
+   4              		.eabi_attribute 23, 3
+   5              		.eabi_attribute 24, 1
+   6              		.eabi_attribute 25, 1
+   7              		.eabi_attribute 26, 1
+   8              		.eabi_attribute 30, 1
+   9              		.eabi_attribute 34, 1
+  10              		.eabi_attribute 18, 4
+  11              		.file	"i2c-lcd.c"
+  12              		.text
+  13              	.Ltext0:
+  14              		.cfi_sections	.debug_frame
+  15              		.section	.text.lcd_send_cmd,"ax",%progbits
+  16              		.align	1
+  17              		.global	lcd_send_cmd
+  18              		.arch armv7-m
+  19              		.syntax unified
+  20              		.thumb
+  21              		.thumb_func
+  22              		.fpu softvfp
+  24              	lcd_send_cmd:
+  25              	.LVL0:
+  26              	.LFB65:
+  27              		.file 1 "Src/i2c-lcd.c"
+   1:Src/i2c-lcd.c **** 
+   2:Src/i2c-lcd.c **** /** Put this in the src folder **/
+   3:Src/i2c-lcd.c **** 
+   4:Src/i2c-lcd.c **** #include "i2c-lcd.h"
+   5:Src/i2c-lcd.c **** extern I2C_HandleTypeDef hi2c1;  // change your handler here accordingly
+   6:Src/i2c-lcd.c **** 
+   7:Src/i2c-lcd.c **** #define SLAVE_ADDRESS_LCD (0x3F <<1) // change this according to ur setup
+   8:Src/i2c-lcd.c **** 
+   9:Src/i2c-lcd.c **** #define LCD_CURSORSHIFT 0x10 
+  10:Src/i2c-lcd.c **** #define LCD_DISPLAYMOVE	0x08
+  11:Src/i2c-lcd.c **** 
+  12:Src/i2c-lcd.c **** #define LCD_NOBACKLIGHT 0x00
+  13:Src/i2c-lcd.c **** #define LCD_BACKLIGHT 0xFF
+  14:Src/i2c-lcd.c **** 
+  15:Src/i2c-lcd.c **** void lcd_send_cmd (char cmd)
+  16:Src/i2c-lcd.c **** {
+  28              		.loc 1 16 1 view -0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 8
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              		.loc 1 16 1 is_stmt 0 view .LVU1
+  33 0000 00B5     		push	{lr}
+  34              	.LCFI0:
+  35              		.cfi_def_cfa_offset 4
+  36              		.cfi_offset 14, -4
+  37 0002 85B0     		sub	sp, sp, #20
+  38              	.LCFI1:
+  39              		.cfi_def_cfa_offset 24
+  17:Src/i2c-lcd.c ****   char data_u, data_l;
+  40              		.loc 1 17 3 is_stmt 1 view .LVU2
+  18:Src/i2c-lcd.c **** 	uint8_t data_t[4];
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccdwZp4t.s 			page 2
+
+
+  41              		.loc 1 18 2 view .LVU3
+  19:Src/i2c-lcd.c **** 	data_u = (cmd&0xf0);
+  42              		.loc 1 19 2 view .LVU4
+  43              		.loc 1 19 9 is_stmt 0 view .LVU5
+  44 0004 00F0F003 		and	r3, r0, #240
+  45              	.LVL1:
+  20:Src/i2c-lcd.c **** 	data_l = ((cmd<<4)&0xf0);
+  46              		.loc 1 20 2 is_stmt 1 view .LVU6
+  47              		.loc 1 20 16 is_stmt 0 view .LVU7
+  48 0008 0001     		lsls	r0, r0, #4
+  49              	.LVL2:
+  50              		.loc 1 20 9 view .LVU8
+  51 000a C0B2     		uxtb	r0, r0
+  52              	.LVL3:
+  21:Src/i2c-lcd.c **** 	data_t[0] = data_u|0x0C;  //en=1, rs=0
+  53              		.loc 1 21 2 is_stmt 1 view .LVU9
+  54              		.loc 1 21 12 is_stmt 0 view .LVU10
+  55 000c 43F00C02 		orr	r2, r3, #12
+  56 0010 8DF80C20 		strb	r2, [sp, #12]
+  22:Src/i2c-lcd.c **** 	data_t[1] = data_u|0x08;  //en=0, rs=0
+  57              		.loc 1 22 2 is_stmt 1 view .LVU11
+  58              		.loc 1 22 12 is_stmt 0 view .LVU12
+  59 0014 43F00803 		orr	r3, r3, #8
+  60              	.LVL4:
+  61              		.loc 1 22 12 view .LVU13
+  62 0018 8DF80D30 		strb	r3, [sp, #13]
+  23:Src/i2c-lcd.c **** 	data_t[2] = data_l|0x0C;  //en=1, rs=0
+  63              		.loc 1 23 2 is_stmt 1 view .LVU14
+  64              		.loc 1 23 12 is_stmt 0 view .LVU15
+  65 001c 40F00C03 		orr	r3, r0, #12
+  66 0020 8DF80E30 		strb	r3, [sp, #14]
+  24:Src/i2c-lcd.c **** 	data_t[3] = data_l|0x08;  //en=0, rs=0
+  67              		.loc 1 24 2 is_stmt 1 view .LVU16
+  68              		.loc 1 24 12 is_stmt 0 view .LVU17
+  69 0024 40F00800 		orr	r0, r0, #8
+  70              	.LVL5:
+  71              		.loc 1 24 12 view .LVU18
+  72 0028 8DF80F00 		strb	r0, [sp, #15]
+  25:Src/i2c-lcd.c **** 	HAL_I2C_Master_Transmit (&hi2c1, SLAVE_ADDRESS_LCD,(uint8_t *) data_t, 4, 100);
+  73              		.loc 1 25 2 is_stmt 1 view .LVU19
+  74 002c 6423     		movs	r3, #100
+  75 002e 0093     		str	r3, [sp]
+  76 0030 0423     		movs	r3, #4
+  77 0032 03AA     		add	r2, sp, #12
+  78 0034 7E21     		movs	r1, #126
+  79 0036 0348     		ldr	r0, .L3
+  80 0038 FFF7FEFF 		bl	HAL_I2C_Master_Transmit
+  81              	.LVL6:
+  26:Src/i2c-lcd.c **** }
+  82              		.loc 1 26 1 is_stmt 0 view .LVU20
+  83 003c 05B0     		add	sp, sp, #20
+  84              	.LCFI2:
+  85              		.cfi_def_cfa_offset 4
+  86              		@ sp needed
+  87 003e 5DF804FB 		ldr	pc, [sp], #4
+  88              	.L4:
+  89 0042 00BF     		.align	2
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccdwZp4t.s 			page 3
+
+
+  90              	.L3:
+  91 0044 00000000 		.word	hi2c1
+  92              		.cfi_endproc
+  93              	.LFE65:
+  95              		.section	.text.lcd_send_data,"ax",%progbits
+  96              		.align	1
+  97              		.global	lcd_send_data
+  98              		.syntax unified
+  99              		.thumb
+ 100              		.thumb_func
+ 101              		.fpu softvfp
+ 103              	lcd_send_data:
+ 104              	.LVL7:
+ 105              	.LFB66:
+  27:Src/i2c-lcd.c **** 
+  28:Src/i2c-lcd.c **** void lcd_send_data (char data)
+  29:Src/i2c-lcd.c **** {
+ 106              		.loc 1 29 1 is_stmt 1 view -0
+ 107              		.cfi_startproc
+ 108              		@ args = 0, pretend = 0, frame = 8
+ 109              		@ frame_needed = 0, uses_anonymous_args = 0
+ 110              		.loc 1 29 1 is_stmt 0 view .LVU22
+ 111 0000 00B5     		push	{lr}
+ 112              	.LCFI3:
+ 113              		.cfi_def_cfa_offset 4
+ 114              		.cfi_offset 14, -4
+ 115 0002 85B0     		sub	sp, sp, #20
+ 116              	.LCFI4:
+ 117              		.cfi_def_cfa_offset 24
+  30:Src/i2c-lcd.c **** 	char data_u, data_l;
+ 118              		.loc 1 30 2 is_stmt 1 view .LVU23
+  31:Src/i2c-lcd.c **** 	uint8_t data_t[4];
+ 119              		.loc 1 31 2 view .LVU24
+  32:Src/i2c-lcd.c **** 	data_u = (data&0xf0);
+ 120              		.loc 1 32 2 view .LVU25
+ 121              		.loc 1 32 9 is_stmt 0 view .LVU26
+ 122 0004 00F0F003 		and	r3, r0, #240
+ 123              	.LVL8:
+  33:Src/i2c-lcd.c **** 	data_l = ((data<<4)&0xf0);
+ 124              		.loc 1 33 2 is_stmt 1 view .LVU27
+ 125              		.loc 1 33 17 is_stmt 0 view .LVU28
+ 126 0008 0001     		lsls	r0, r0, #4
+ 127              	.LVL9:
+ 128              		.loc 1 33 9 view .LVU29
+ 129 000a C0B2     		uxtb	r0, r0
+ 130              	.LVL10:
+  34:Src/i2c-lcd.c **** 	data_t[0] = data_u|0x0D;  //en=1, rs=0
+ 131              		.loc 1 34 2 is_stmt 1 view .LVU30
+ 132              		.loc 1 34 12 is_stmt 0 view .LVU31
+ 133 000c 43F00D02 		orr	r2, r3, #13
+ 134 0010 8DF80C20 		strb	r2, [sp, #12]
+  35:Src/i2c-lcd.c **** 	data_t[1] = data_u|0x09;  //en=0, rs=0
+ 135              		.loc 1 35 2 is_stmt 1 view .LVU32
+ 136              		.loc 1 35 12 is_stmt 0 view .LVU33
+ 137 0014 43F00903 		orr	r3, r3, #9
+ 138              	.LVL11:
+ 139              		.loc 1 35 12 view .LVU34
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccdwZp4t.s 			page 4
+
+
+ 140 0018 8DF80D30 		strb	r3, [sp, #13]
+  36:Src/i2c-lcd.c **** 	data_t[2] = data_l|0x0D;  //en=1, rs=0
+ 141              		.loc 1 36 2 is_stmt 1 view .LVU35
+ 142              		.loc 1 36 12 is_stmt 0 view .LVU36
+ 143 001c 40F00D03 		orr	r3, r0, #13
+ 144 0020 8DF80E30 		strb	r3, [sp, #14]
+  37:Src/i2c-lcd.c **** 	data_t[3] = data_l|0x09;  //en=0, rs=0
+ 145              		.loc 1 37 2 is_stmt 1 view .LVU37
+ 146              		.loc 1 37 12 is_stmt 0 view .LVU38
+ 147 0024 40F00900 		orr	r0, r0, #9
+ 148              	.LVL12:
+ 149              		.loc 1 37 12 view .LVU39
+ 150 0028 8DF80F00 		strb	r0, [sp, #15]
+  38:Src/i2c-lcd.c **** 	HAL_I2C_Master_Transmit (&hi2c1, SLAVE_ADDRESS_LCD,(uint8_t *) data_t, 4, 100);
+ 151              		.loc 1 38 2 is_stmt 1 view .LVU40
+ 152 002c 6423     		movs	r3, #100
+ 153 002e 0093     		str	r3, [sp]
+ 154 0030 0423     		movs	r3, #4
+ 155 0032 03AA     		add	r2, sp, #12
+ 156 0034 7E21     		movs	r1, #126
+ 157 0036 0348     		ldr	r0, .L7
+ 158 0038 FFF7FEFF 		bl	HAL_I2C_Master_Transmit
+ 159              	.LVL13:
+  39:Src/i2c-lcd.c **** }
+ 160              		.loc 1 39 1 is_stmt 0 view .LVU41
+ 161 003c 05B0     		add	sp, sp, #20
+ 162              	.LCFI5:
+ 163              		.cfi_def_cfa_offset 4
+ 164              		@ sp needed
+ 165 003e 5DF804FB 		ldr	pc, [sp], #4
+ 166              	.L8:
+ 167 0042 00BF     		.align	2
+ 168              	.L7:
+ 169 0044 00000000 		.word	hi2c1
+ 170              		.cfi_endproc
+ 171              	.LFE66:
+ 173              		.section	.text.lcd_clear,"ax",%progbits
+ 174              		.align	1
+ 175              		.global	lcd_clear
+ 176              		.syntax unified
+ 177              		.thumb
+ 178              		.thumb_func
+ 179              		.fpu softvfp
+ 181              	lcd_clear:
+ 182              	.LFB67:
+  40:Src/i2c-lcd.c **** 
+  41:Src/i2c-lcd.c **** void lcd_clear (void)
+  42:Src/i2c-lcd.c **** {
+ 183              		.loc 1 42 1 is_stmt 1 view -0
+ 184              		.cfi_startproc
+ 185              		@ args = 0, pretend = 0, frame = 0
+ 186              		@ frame_needed = 0, uses_anonymous_args = 0
+ 187 0000 10B5     		push	{r4, lr}
+ 188              	.LCFI6:
+ 189              		.cfi_def_cfa_offset 8
+ 190              		.cfi_offset 4, -8
+ 191              		.cfi_offset 14, -4
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccdwZp4t.s 			page 5
+
+
+  43:Src/i2c-lcd.c **** 	lcd_send_cmd (0x80);
+ 192              		.loc 1 43 2 view .LVU43
+ 193 0002 8020     		movs	r0, #128
+ 194 0004 FFF7FEFF 		bl	lcd_send_cmd
+ 195              	.LVL14:
+  44:Src/i2c-lcd.c **** 	for (int i=0; i<70; i++)
+ 196              		.loc 1 44 2 view .LVU44
+ 197              	.LBB2:
+ 198              		.loc 1 44 7 view .LVU45
+ 199              		.loc 1 44 11 is_stmt 0 view .LVU46
+ 200 0008 0024     		movs	r4, #0
+ 201              		.loc 1 44 2 view .LVU47
+ 202 000a 03E0     		b	.L10
+ 203              	.LVL15:
+ 204              	.L11:
+  45:Src/i2c-lcd.c **** 	{
+  46:Src/i2c-lcd.c **** 		lcd_send_data (' ');
+ 205              		.loc 1 46 3 is_stmt 1 discriminator 3 view .LVU48
+ 206 000c 2020     		movs	r0, #32
+ 207 000e FFF7FEFF 		bl	lcd_send_data
+ 208              	.LVL16:
+  44:Src/i2c-lcd.c **** 	for (int i=0; i<70; i++)
+ 209              		.loc 1 44 22 discriminator 3 view .LVU49
+  44:Src/i2c-lcd.c **** 	for (int i=0; i<70; i++)
+ 210              		.loc 1 44 23 is_stmt 0 discriminator 3 view .LVU50
+ 211 0012 0134     		adds	r4, r4, #1
+ 212              	.LVL17:
+ 213              	.L10:
+  44:Src/i2c-lcd.c **** 	for (int i=0; i<70; i++)
+ 214              		.loc 1 44 16 is_stmt 1 discriminator 1 view .LVU51
+  44:Src/i2c-lcd.c **** 	for (int i=0; i<70; i++)
+ 215              		.loc 1 44 2 is_stmt 0 discriminator 1 view .LVU52
+ 216 0014 452C     		cmp	r4, #69
+ 217 0016 F9DD     		ble	.L11
+ 218              	.LBE2:
+  47:Src/i2c-lcd.c **** 	}
+  48:Src/i2c-lcd.c **** }
+ 219              		.loc 1 48 1 view .LVU53
+ 220 0018 10BD     		pop	{r4, pc}
+ 221              		.loc 1 48 1 view .LVU54
+ 222              		.cfi_endproc
+ 223              	.LFE67:
+ 225              		.section	.text.lcd_put_cur,"ax",%progbits
+ 226              		.align	1
+ 227              		.global	lcd_put_cur
+ 228              		.syntax unified
+ 229              		.thumb
+ 230              		.thumb_func
+ 231              		.fpu softvfp
+ 233              	lcd_put_cur:
+ 234              	.LVL18:
+ 235              	.LFB68:
+  49:Src/i2c-lcd.c **** 
+  50:Src/i2c-lcd.c **** void lcd_put_cur(int row, int col)
+  51:Src/i2c-lcd.c **** {
+ 236              		.loc 1 51 1 is_stmt 1 view -0
+ 237              		.cfi_startproc
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccdwZp4t.s 			page 6
+
+
+ 238              		@ args = 0, pretend = 0, frame = 0
+ 239              		@ frame_needed = 0, uses_anonymous_args = 0
+ 240              		.loc 1 51 1 is_stmt 0 view .LVU56
+ 241 0000 08B5     		push	{r3, lr}
+ 242              	.LCFI7:
+ 243              		.cfi_def_cfa_offset 8
+ 244              		.cfi_offset 3, -8
+ 245              		.cfi_offset 14, -4
+  52:Src/i2c-lcd.c ****     switch (row)
+ 246              		.loc 1 52 5 is_stmt 1 view .LVU57
+ 247 0002 28B1     		cbz	r0, .L14
+ 248 0004 0128     		cmp	r0, #1
+ 249 0006 06D0     		beq	.L15
+ 250              	.L16:
+  53:Src/i2c-lcd.c ****     {
+  54:Src/i2c-lcd.c ****         case 0:
+  55:Src/i2c-lcd.c ****             col |= 0x80;
+  56:Src/i2c-lcd.c ****             break;
+  57:Src/i2c-lcd.c ****         case 1:
+  58:Src/i2c-lcd.c ****             col |= 0xC0;
+  59:Src/i2c-lcd.c ****             break;
+  60:Src/i2c-lcd.c ****     }
+  61:Src/i2c-lcd.c **** 
+  62:Src/i2c-lcd.c ****     lcd_send_cmd (col);
+ 251              		.loc 1 62 5 view .LVU58
+ 252 0008 C8B2     		uxtb	r0, r1
+ 253              	.LVL19:
+ 254              		.loc 1 62 5 is_stmt 0 view .LVU59
+ 255 000a FFF7FEFF 		bl	lcd_send_cmd
+ 256              	.LVL20:
+  63:Src/i2c-lcd.c **** }
+ 257              		.loc 1 63 1 view .LVU60
+ 258 000e 08BD     		pop	{r3, pc}
+ 259              	.LVL21:
+ 260              	.L14:
+  55:Src/i2c-lcd.c ****             break;
+ 261              		.loc 1 55 13 is_stmt 1 view .LVU61
+  55:Src/i2c-lcd.c ****             break;
+ 262              		.loc 1 55 17 is_stmt 0 view .LVU62
+ 263 0010 41F08001 		orr	r1, r1, #128
+ 264              	.LVL22:
+  56:Src/i2c-lcd.c ****         case 1:
+ 265              		.loc 1 56 13 is_stmt 1 view .LVU63
+ 266 0014 F8E7     		b	.L16
+ 267              	.L15:
+  58:Src/i2c-lcd.c ****             break;
+ 268              		.loc 1 58 13 view .LVU64
+  58:Src/i2c-lcd.c ****             break;
+ 269              		.loc 1 58 17 is_stmt 0 view .LVU65
+ 270 0016 41F0C001 		orr	r1, r1, #192
+ 271              	.LVL23:
+  59:Src/i2c-lcd.c ****     }
+ 272              		.loc 1 59 13 is_stmt 1 view .LVU66
+ 273 001a F5E7     		b	.L16
+ 274              		.cfi_endproc
+ 275              	.LFE68:
+ 277              		.section	.text.lcd_init,"ax",%progbits
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccdwZp4t.s 			page 7
+
+
+ 278              		.align	1
+ 279              		.global	lcd_init
+ 280              		.syntax unified
+ 281              		.thumb
+ 282              		.thumb_func
+ 283              		.fpu softvfp
+ 285              	lcd_init:
+ 286              	.LFB69:
+  64:Src/i2c-lcd.c **** 
+  65:Src/i2c-lcd.c **** 
+  66:Src/i2c-lcd.c **** void lcd_init (void)
+  67:Src/i2c-lcd.c **** {
+ 287              		.loc 1 67 1 view -0
+ 288              		.cfi_startproc
+ 289              		@ args = 0, pretend = 0, frame = 0
+ 290              		@ frame_needed = 0, uses_anonymous_args = 0
+ 291 0000 08B5     		push	{r3, lr}
+ 292              	.LCFI8:
+ 293              		.cfi_def_cfa_offset 8
+ 294              		.cfi_offset 3, -8
+ 295              		.cfi_offset 14, -4
+  68:Src/i2c-lcd.c **** 	// 4 bit initialisation
+  69:Src/i2c-lcd.c **** 	HAL_Delay(50);  // wait for >40ms
+ 296              		.loc 1 69 2 view .LVU68
+ 297 0002 3220     		movs	r0, #50
+ 298 0004 FFF7FEFF 		bl	HAL_Delay
+ 299              	.LVL24:
+  70:Src/i2c-lcd.c **** 	lcd_send_cmd (0x30);
+ 300              		.loc 1 70 2 view .LVU69
+ 301 0008 3020     		movs	r0, #48
+ 302 000a FFF7FEFF 		bl	lcd_send_cmd
+ 303              	.LVL25:
+  71:Src/i2c-lcd.c **** 	HAL_Delay(5);  // wait for >4.1ms
+ 304              		.loc 1 71 2 view .LVU70
+ 305 000e 0520     		movs	r0, #5
+ 306 0010 FFF7FEFF 		bl	HAL_Delay
+ 307              	.LVL26:
+  72:Src/i2c-lcd.c **** 	lcd_send_cmd (0x30);
+ 308              		.loc 1 72 2 view .LVU71
+ 309 0014 3020     		movs	r0, #48
+ 310 0016 FFF7FEFF 		bl	lcd_send_cmd
+ 311              	.LVL27:
+  73:Src/i2c-lcd.c **** 	HAL_Delay(1);  // wait for >100us
+ 312              		.loc 1 73 2 view .LVU72
+ 313 001a 0120     		movs	r0, #1
+ 314 001c FFF7FEFF 		bl	HAL_Delay
+ 315              	.LVL28:
+  74:Src/i2c-lcd.c **** 	lcd_send_cmd (0x30);
+ 316              		.loc 1 74 2 view .LVU73
+ 317 0020 3020     		movs	r0, #48
+ 318 0022 FFF7FEFF 		bl	lcd_send_cmd
+ 319              	.LVL29:
+  75:Src/i2c-lcd.c **** 	HAL_Delay(10);
+ 320              		.loc 1 75 2 view .LVU74
+ 321 0026 0A20     		movs	r0, #10
+ 322 0028 FFF7FEFF 		bl	HAL_Delay
+ 323              	.LVL30:
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccdwZp4t.s 			page 8
+
+
+  76:Src/i2c-lcd.c **** 	lcd_send_cmd (0x20);  // 4bit mode
+ 324              		.loc 1 76 2 view .LVU75
+ 325 002c 2020     		movs	r0, #32
+ 326 002e FFF7FEFF 		bl	lcd_send_cmd
+ 327              	.LVL31:
+  77:Src/i2c-lcd.c **** 	HAL_Delay(10);
+ 328              		.loc 1 77 2 view .LVU76
+ 329 0032 0A20     		movs	r0, #10
+ 330 0034 FFF7FEFF 		bl	HAL_Delay
+ 331              	.LVL32:
+  78:Src/i2c-lcd.c **** 
+  79:Src/i2c-lcd.c ****   // dislay initialisation
+  80:Src/i2c-lcd.c **** 	lcd_send_cmd (0x28); // Function set --> DL=0 (4 bit mode), N = 1 (2 line display) F = 0 (5x8 char
+ 332              		.loc 1 80 2 view .LVU77
+ 333 0038 2820     		movs	r0, #40
+ 334 003a FFF7FEFF 		bl	lcd_send_cmd
+ 335              	.LVL33:
+  81:Src/i2c-lcd.c **** 	HAL_Delay(1);
+ 336              		.loc 1 81 2 view .LVU78
+ 337 003e 0120     		movs	r0, #1
+ 338 0040 FFF7FEFF 		bl	HAL_Delay
+ 339              	.LVL34:
+  82:Src/i2c-lcd.c **** 	lcd_send_cmd (0x08); //Display on/off control --> D=0,C=0, B=0  ---> display off
+ 340              		.loc 1 82 2 view .LVU79
+ 341 0044 0820     		movs	r0, #8
+ 342 0046 FFF7FEFF 		bl	lcd_send_cmd
+ 343              	.LVL35:
+  83:Src/i2c-lcd.c **** 	HAL_Delay(1);
+ 344              		.loc 1 83 2 view .LVU80
+ 345 004a 0120     		movs	r0, #1
+ 346 004c FFF7FEFF 		bl	HAL_Delay
+ 347              	.LVL36:
+  84:Src/i2c-lcd.c **** 	lcd_send_cmd (0x01);  // clear display
+ 348              		.loc 1 84 2 view .LVU81
+ 349 0050 0120     		movs	r0, #1
+ 350 0052 FFF7FEFF 		bl	lcd_send_cmd
+ 351              	.LVL37:
+  85:Src/i2c-lcd.c **** 	HAL_Delay(1);
+ 352              		.loc 1 85 2 view .LVU82
+ 353 0056 0120     		movs	r0, #1
+ 354 0058 FFF7FEFF 		bl	HAL_Delay
+ 355              	.LVL38:
+  86:Src/i2c-lcd.c **** 	HAL_Delay(1);
+ 356              		.loc 1 86 2 view .LVU83
+ 357 005c 0120     		movs	r0, #1
+ 358 005e FFF7FEFF 		bl	HAL_Delay
+ 359              	.LVL39:
+  87:Src/i2c-lcd.c **** 	lcd_send_cmd (0x06); //Entry mode set --> I/D = 1 (increment cursor) & S = 0 (no shift)
+ 360              		.loc 1 87 2 view .LVU84
+ 361 0062 0620     		movs	r0, #6
+ 362 0064 FFF7FEFF 		bl	lcd_send_cmd
+ 363              	.LVL40:
+  88:Src/i2c-lcd.c **** 	HAL_Delay(1);
+ 364              		.loc 1 88 2 view .LVU85
+ 365 0068 0120     		movs	r0, #1
+ 366 006a FFF7FEFF 		bl	HAL_Delay
+ 367              	.LVL41:
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccdwZp4t.s 			page 9
+
+
+  89:Src/i2c-lcd.c **** 	lcd_send_cmd (0x0C); //Display on/off control --> D = 1, C and B = 0. (Cursor and blink, last two 
+ 368              		.loc 1 89 2 view .LVU86
+ 369 006e 0C20     		movs	r0, #12
+ 370 0070 FFF7FEFF 		bl	lcd_send_cmd
+ 371              	.LVL42:
+  90:Src/i2c-lcd.c **** 	HAL_Delay(100);
+ 372              		.loc 1 90 2 view .LVU87
+ 373 0074 6420     		movs	r0, #100
+ 374 0076 FFF7FEFF 		bl	HAL_Delay
+ 375              	.LVL43:
+  91:Src/i2c-lcd.c **** }
+ 376              		.loc 1 91 1 is_stmt 0 view .LVU88
+ 377 007a 08BD     		pop	{r3, pc}
+ 378              		.cfi_endproc
+ 379              	.LFE69:
+ 381              		.section	.text.lcd_send_string,"ax",%progbits
+ 382              		.align	1
+ 383              		.global	lcd_send_string
+ 384              		.syntax unified
+ 385              		.thumb
+ 386              		.thumb_func
+ 387              		.fpu softvfp
+ 389              	lcd_send_string:
+ 390              	.LVL44:
+ 391              	.LFB70:
+  92:Src/i2c-lcd.c **** 
+  93:Src/i2c-lcd.c **** void lcd_send_string (const char *str)
+  94:Src/i2c-lcd.c **** {
+ 392              		.loc 1 94 1 is_stmt 1 view -0
+ 393              		.cfi_startproc
+ 394              		@ args = 0, pretend = 0, frame = 0
+ 395              		@ frame_needed = 0, uses_anonymous_args = 0
+ 396              		.loc 1 94 1 is_stmt 0 view .LVU90
+ 397 0000 10B5     		push	{r4, lr}
+ 398              	.LCFI9:
+ 399              		.cfi_def_cfa_offset 8
+ 400              		.cfi_offset 4, -8
+ 401              		.cfi_offset 14, -4
+ 402 0002 0446     		mov	r4, r0
+  95:Src/i2c-lcd.c **** 	while (*str) lcd_send_data (*str++);
+ 403              		.loc 1 95 2 is_stmt 1 view .LVU91
+ 404              	.LVL45:
+ 405              	.L21:
+ 406              		.loc 1 95 8 discriminator 1 view .LVU92
+ 407              		.loc 1 95 9 is_stmt 0 discriminator 1 view .LVU93
+ 408 0004 2078     		ldrb	r0, [r4]	@ zero_extendqisi2
+ 409              		.loc 1 95 8 discriminator 1 view .LVU94
+ 410 0006 18B1     		cbz	r0, .L24
+ 411              		.loc 1 95 15 is_stmt 1 discriminator 2 view .LVU95
+ 412              		.loc 1 95 34 is_stmt 0 discriminator 2 view .LVU96
+ 413 0008 0134     		adds	r4, r4, #1
+ 414              	.LVL46:
+ 415              		.loc 1 95 15 discriminator 2 view .LVU97
+ 416 000a FFF7FEFF 		bl	lcd_send_data
+ 417              	.LVL47:
+ 418 000e F9E7     		b	.L21
+ 419              	.L24:
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccdwZp4t.s 			page 10
+
+
+  96:Src/i2c-lcd.c **** }
+ 420              		.loc 1 96 1 view .LVU98
+ 421 0010 10BD     		pop	{r4, pc}
+ 422              		.loc 1 96 1 view .LVU99
+ 423              		.cfi_endproc
+ 424              	.LFE70:
+ 426              		.section	.text.scrollDiaplayLeft,"ax",%progbits
+ 427              		.align	1
+ 428              		.global	scrollDiaplayLeft
+ 429              		.syntax unified
+ 430              		.thumb
+ 431              		.thumb_func
+ 432              		.fpu softvfp
+ 434              	scrollDiaplayLeft:
+ 435              	.LFB71:
+  97:Src/i2c-lcd.c **** 
+  98:Src/i2c-lcd.c **** void scrollDiaplayLeft(void)
+  99:Src/i2c-lcd.c **** {
+ 436              		.loc 1 99 1 is_stmt 1 view -0
+ 437              		.cfi_startproc
+ 438              		@ args = 0, pretend = 0, frame = 0
+ 439              		@ frame_needed = 0, uses_anonymous_args = 0
+ 440 0000 08B5     		push	{r3, lr}
+ 441              	.LCFI10:
+ 442              		.cfi_def_cfa_offset 8
+ 443              		.cfi_offset 3, -8
+ 444              		.cfi_offset 14, -4
+ 100:Src/i2c-lcd.c **** 	lcd_send_cmd(LCD_CURSORSHIFT | LCD_DISPLAYMOVE | 0x00);
+ 445              		.loc 1 100 2 view .LVU101
+ 446 0002 1820     		movs	r0, #24
+ 447 0004 FFF7FEFF 		bl	lcd_send_cmd
+ 448              	.LVL48:
+ 101:Src/i2c-lcd.c **** }
+ 449              		.loc 1 101 1 is_stmt 0 view .LVU102
+ 450 0008 08BD     		pop	{r3, pc}
+ 451              		.cfi_endproc
+ 452              	.LFE71:
+ 454              		.section	.text.scrollDiaplayRight,"ax",%progbits
+ 455              		.align	1
+ 456              		.global	scrollDiaplayRight
+ 457              		.syntax unified
+ 458              		.thumb
+ 459              		.thumb_func
+ 460              		.fpu softvfp
+ 462              	scrollDiaplayRight:
+ 463              	.LFB72:
+ 102:Src/i2c-lcd.c **** 
+ 103:Src/i2c-lcd.c **** void scrollDiaplayRight(void)
+ 104:Src/i2c-lcd.c **** {
+ 464              		.loc 1 104 1 is_stmt 1 view -0
+ 465              		.cfi_startproc
+ 466              		@ args = 0, pretend = 0, frame = 0
+ 467              		@ frame_needed = 0, uses_anonymous_args = 0
+ 468 0000 08B5     		push	{r3, lr}
+ 469              	.LCFI11:
+ 470              		.cfi_def_cfa_offset 8
+ 471              		.cfi_offset 3, -8
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccdwZp4t.s 			page 11
+
+
+ 472              		.cfi_offset 14, -4
+ 105:Src/i2c-lcd.c **** 	lcd_send_cmd(LCD_CURSORSHIFT | LCD_DISPLAYMOVE | 0x04);
+ 473              		.loc 1 105 2 view .LVU104
+ 474 0002 1C20     		movs	r0, #28
+ 475 0004 FFF7FEFF 		bl	lcd_send_cmd
+ 476              	.LVL49:
+ 106:Src/i2c-lcd.c **** }
+ 477              		.loc 1 106 1 is_stmt 0 view .LVU105
+ 478 0008 08BD     		pop	{r3, pc}
+ 479              		.cfi_endproc
+ 480              	.LFE72:
+ 482              		.section	.text.setBacklightOff,"ax",%progbits
+ 483              		.align	1
+ 484              		.global	setBacklightOff
+ 485              		.syntax unified
+ 486              		.thumb
+ 487              		.thumb_func
+ 488              		.fpu softvfp
+ 490              	setBacklightOff:
+ 491              	.LFB73:
+ 107:Src/i2c-lcd.c **** 
+ 108:Src/i2c-lcd.c **** void setBacklightOff(void)
+ 109:Src/i2c-lcd.c **** {
+ 492              		.loc 1 109 1 is_stmt 1 view -0
+ 493              		.cfi_startproc
+ 494              		@ args = 0, pretend = 0, frame = 8
+ 495              		@ frame_needed = 0, uses_anonymous_args = 0
+ 496 0000 00B5     		push	{lr}
+ 497              	.LCFI12:
+ 498              		.cfi_def_cfa_offset 4
+ 499              		.cfi_offset 14, -4
+ 500 0002 85B0     		sub	sp, sp, #20
+ 501              	.LCFI13:
+ 502              		.cfi_def_cfa_offset 24
+ 110:Src/i2c-lcd.c **** 	
+ 111:Src/i2c-lcd.c **** 	uint8_t data_t[4] = {0};
+ 503              		.loc 1 111 2 view .LVU107
+ 504              		.loc 1 111 10 is_stmt 0 view .LVU108
+ 505 0004 0023     		movs	r3, #0
+ 506 0006 0393     		str	r3, [sp, #12]
+ 112:Src/i2c-lcd.c **** 	HAL_I2C_Master_Transmit (&hi2c1, SLAVE_ADDRESS_LCD,(uint8_t *) data_t, 4, 100);
+ 507              		.loc 1 112 2 is_stmt 1 view .LVU109
+ 508 0008 6423     		movs	r3, #100
+ 509 000a 0093     		str	r3, [sp]
+ 510 000c 0423     		movs	r3, #4
+ 511 000e 03AA     		add	r2, sp, #12
+ 512 0010 7E21     		movs	r1, #126
+ 513 0012 0348     		ldr	r0, .L31
+ 514 0014 FFF7FEFF 		bl	HAL_I2C_Master_Transmit
+ 515              	.LVL50:
+ 113:Src/i2c-lcd.c **** 	
+ 114:Src/i2c-lcd.c **** }
+ 516              		.loc 1 114 1 is_stmt 0 view .LVU110
+ 517 0018 05B0     		add	sp, sp, #20
+ 518              	.LCFI14:
+ 519              		.cfi_def_cfa_offset 4
+ 520              		@ sp needed
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccdwZp4t.s 			page 12
+
+
+ 521 001a 5DF804FB 		ldr	pc, [sp], #4
+ 522              	.L32:
+ 523 001e 00BF     		.align	2
+ 524              	.L31:
+ 525 0020 00000000 		.word	hi2c1
+ 526              		.cfi_endproc
+ 527              	.LFE73:
+ 529              		.text
+ 530              	.Letext0:
+ 531              		.file 2 "c:\\users\\user\\.vscode\\extensions\\buzzyelectronics.stm-helper-1.2.9\\armgcc\\arm-none
+ 532              		.file 3 "c:\\users\\user\\.vscode\\extensions\\buzzyelectronics.stm-helper-1.2.9\\armgcc\\arm-none
+ 533              		.file 4 "Drivers/CMSIS/Include/core_cm3.h"
+ 534              		.file 5 "Drivers/CMSIS/Device/ST/STM32F1xx/Include/system_stm32f1xx.h"
+ 535              		.file 6 "Drivers/CMSIS/Device/ST/STM32F1xx/Include/stm32f103xb.h"
+ 536              		.file 7 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_def.h"
+ 537              		.file 8 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_dma.h"
+ 538              		.file 9 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_i2c.h"
+ 539              		.file 10 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h"
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccdwZp4t.s 			page 13
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 i2c-lcd.c
+C:\Users\User\AppData\Local\Temp\ccdwZp4t.s:16     .text.lcd_send_cmd:0000000000000000 $t
+C:\Users\User\AppData\Local\Temp\ccdwZp4t.s:24     .text.lcd_send_cmd:0000000000000000 lcd_send_cmd
+C:\Users\User\AppData\Local\Temp\ccdwZp4t.s:91     .text.lcd_send_cmd:0000000000000044 $d
+C:\Users\User\AppData\Local\Temp\ccdwZp4t.s:96     .text.lcd_send_data:0000000000000000 $t
+C:\Users\User\AppData\Local\Temp\ccdwZp4t.s:103    .text.lcd_send_data:0000000000000000 lcd_send_data
+C:\Users\User\AppData\Local\Temp\ccdwZp4t.s:169    .text.lcd_send_data:0000000000000044 $d
+C:\Users\User\AppData\Local\Temp\ccdwZp4t.s:174    .text.lcd_clear:0000000000000000 $t
+C:\Users\User\AppData\Local\Temp\ccdwZp4t.s:181    .text.lcd_clear:0000000000000000 lcd_clear
+C:\Users\User\AppData\Local\Temp\ccdwZp4t.s:226    .text.lcd_put_cur:0000000000000000 $t
+C:\Users\User\AppData\Local\Temp\ccdwZp4t.s:233    .text.lcd_put_cur:0000000000000000 lcd_put_cur
+C:\Users\User\AppData\Local\Temp\ccdwZp4t.s:278    .text.lcd_init:0000000000000000 $t
+C:\Users\User\AppData\Local\Temp\ccdwZp4t.s:285    .text.lcd_init:0000000000000000 lcd_init
+C:\Users\User\AppData\Local\Temp\ccdwZp4t.s:382    .text.lcd_send_string:0000000000000000 $t
+C:\Users\User\AppData\Local\Temp\ccdwZp4t.s:389    .text.lcd_send_string:0000000000000000 lcd_send_string
+C:\Users\User\AppData\Local\Temp\ccdwZp4t.s:427    .text.scrollDiaplayLeft:0000000000000000 $t
+C:\Users\User\AppData\Local\Temp\ccdwZp4t.s:434    .text.scrollDiaplayLeft:0000000000000000 scrollDiaplayLeft
+C:\Users\User\AppData\Local\Temp\ccdwZp4t.s:455    .text.scrollDiaplayRight:0000000000000000 $t
+C:\Users\User\AppData\Local\Temp\ccdwZp4t.s:462    .text.scrollDiaplayRight:0000000000000000 scrollDiaplayRight
+C:\Users\User\AppData\Local\Temp\ccdwZp4t.s:483    .text.setBacklightOff:0000000000000000 $t
+C:\Users\User\AppData\Local\Temp\ccdwZp4t.s:490    .text.setBacklightOff:0000000000000000 setBacklightOff
+C:\Users\User\AppData\Local\Temp\ccdwZp4t.s:525    .text.setBacklightOff:0000000000000020 $d
+
+UNDEFINED SYMBOLS
+HAL_I2C_Master_Transmit
+hi2c1
+HAL_Delay

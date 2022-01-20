@@ -1,0 +1,22 @@
+{
+	"version": "0.2.0",
+	"configurations":
+	[
+		{
+			"name": "Cortex debug",
+			"type": "cortex-debug",
+			"request": "launch",
+			"servertype": "openocd",
+			"cwd": "${workspaceFolder}",
+			"armToolchainPath": "c:/Users/User/.vscode/extensions/buzzyelectronics.stm-helper-1.2.9/ArmGcc/bin",
+			"executable": "build/SolarMonitor.elf",
+			"svdFile": "c:/Users/User/.vscode/extensions/buzzyelectronics.stm-helper-1.2.9/SvdTools/STM32F1/STM32F103.svd",
+			"configFiles":
+			[
+				"c:/Users/User/.vscode/extensions/buzzyelectronics.stm-helper-1.2.9/OpenOCD/scripts/interface/stlink.cfg",
+				"c:/Users/User/.vscode/extensions/buzzyelectronics.stm-helper-1.2.9/OpenOCD/scripts/target/stm32f1x.cfg"
+			],
+			"preLaunchTask": "Build project"
+		}
+	]
+}

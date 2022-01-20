@@ -1,0 +1,789 @@
+ARM GAS  C:\Users\User\AppData\Local\Temp\cclKCCmP.s 			page 1
+
+
+   1              		.cpu cortex-m3
+   2              		.eabi_attribute 20, 1
+   3              		.eabi_attribute 21, 1
+   4              		.eabi_attribute 23, 3
+   5              		.eabi_attribute 24, 1
+   6              		.eabi_attribute 25, 1
+   7              		.eabi_attribute 26, 1
+   8              		.eabi_attribute 30, 1
+   9              		.eabi_attribute 34, 1
+  10              		.eabi_attribute 18, 4
+  11              		.file	"lcd.c"
+  12              		.text
+  13              	.Ltext0:
+  14              		.cfi_sections	.debug_frame
+  15              		.section	.text.LCD_WriteByteI2CLCD,"ax",%progbits
+  16              		.align	1
+  17              		.global	LCD_WriteByteI2CLCD
+  18              		.arch armv7-m
+  19              		.syntax unified
+  20              		.thumb
+  21              		.thumb_func
+  22              		.fpu softvfp
+  24              	LCD_WriteByteI2CLCD:
+  25              	.LVL0:
+  26              	.LFB66:
+  27              		.file 1 "Src/lcd.c"
+   1:Src/lcd.c     **** #include "lcd.h"
+   2:Src/lcd.c     **** //------------------------------------------------
+   3:Src/lcd.c     **** uint8_t buf[1]={0};
+   4:Src/lcd.c     **** extern I2C_HandleTypeDef hi2c1;
+   5:Src/lcd.c     **** char str1[100];
+   6:Src/lcd.c     **** uint8_t portlcd; //?????? ??? ???????? ?????? ????? ?????????? ??????????
+   7:Src/lcd.c     **** //------------------------------------------------
+   8:Src/lcd.c     **** __STATIC_INLINE void DelayMicro(__IO uint32_t micros)
+   9:Src/lcd.c     **** {
+  10:Src/lcd.c     **** 	micros *=(SystemCoreClock / 1000000) / 5;
+  11:Src/lcd.c     **** 	while (micros--);
+  12:Src/lcd.c     **** }
+  13:Src/lcd.c     **** //------------------------------------------------
+  14:Src/lcd.c     **** void LCD_WriteByteI2CLCD(uint8_t bt)
+  15:Src/lcd.c     **** {
+  28              		.loc 1 15 1 view -0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              		.loc 1 15 1 is_stmt 0 view .LVU1
+  33 0000 00B5     		push	{lr}
+  34              	.LCFI0:
+  35              		.cfi_def_cfa_offset 4
+  36              		.cfi_offset 14, -4
+  37 0002 83B0     		sub	sp, sp, #12
+  38              	.LCFI1:
+  39              		.cfi_def_cfa_offset 16
+  16:Src/lcd.c     **** 	buf[0]=bt;
+  40              		.loc 1 16 2 is_stmt 1 view .LVU2
+  41              		.loc 1 16 8 is_stmt 0 view .LVU3
+  42 0004 064A     		ldr	r2, .L3
+ARM GAS  C:\Users\User\AppData\Local\Temp\cclKCCmP.s 			page 2
+
+
+  43 0006 1070     		strb	r0, [r2]
+  17:Src/lcd.c     **** 	HAL_I2C_Master_Transmit(&hi2c1,(uint16_t) 0x4E,buf,1,1000);
+  44              		.loc 1 17 2 is_stmt 1 view .LVU4
+  45 0008 4FF47A73 		mov	r3, #1000
+  46 000c 0093     		str	r3, [sp]
+  47 000e 0123     		movs	r3, #1
+  48 0010 4E21     		movs	r1, #78
+  49 0012 0448     		ldr	r0, .L3+4
+  50              	.LVL1:
+  51              		.loc 1 17 2 is_stmt 0 view .LVU5
+  52 0014 FFF7FEFF 		bl	HAL_I2C_Master_Transmit
+  53              	.LVL2:
+  18:Src/lcd.c     **** }
+  54              		.loc 1 18 1 view .LVU6
+  55 0018 03B0     		add	sp, sp, #12
+  56              	.LCFI2:
+  57              		.cfi_def_cfa_offset 4
+  58              		@ sp needed
+  59 001a 5DF804FB 		ldr	pc, [sp], #4
+  60              	.L4:
+  61 001e 00BF     		.align	2
+  62              	.L3:
+  63 0020 00000000 		.word	.LANCHOR0
+  64 0024 00000000 		.word	hi2c1
+  65              		.cfi_endproc
+  66              	.LFE66:
+  68              		.section	.text.sendhalfbyte,"ax",%progbits
+  69              		.align	1
+  70              		.global	sendhalfbyte
+  71              		.syntax unified
+  72              		.thumb
+  73              		.thumb_func
+  74              		.fpu softvfp
+  76              	sendhalfbyte:
+  77              	.LVL3:
+  78              	.LFB67:
+  19:Src/lcd.c     **** //------------------------------------------------
+  20:Src/lcd.c     **** void sendhalfbyte(uint8_t c)
+  21:Src/lcd.c     **** {
+  79              		.loc 1 21 1 is_stmt 1 view -0
+  80              		.cfi_startproc
+  81              		@ args = 0, pretend = 0, frame = 0
+  82              		@ frame_needed = 0, uses_anonymous_args = 0
+  83              		.loc 1 21 1 is_stmt 0 view .LVU8
+  84 0000 38B5     		push	{r3, r4, r5, lr}
+  85              	.LCFI3:
+  86              		.cfi_def_cfa_offset 16
+  87              		.cfi_offset 3, -16
+  88              		.cfi_offset 4, -12
+  89              		.cfi_offset 5, -8
+  90              		.cfi_offset 14, -4
+  22:Src/lcd.c     **** 	c<<=4;
+  91              		.loc 1 22 2 is_stmt 1 view .LVU9
+  92              		.loc 1 22 3 is_stmt 0 view .LVU10
+  93 0002 0401     		lsls	r4, r0, #4
+  94 0004 E4B2     		uxtb	r4, r4
+  95              	.LVL4:
+ARM GAS  C:\Users\User\AppData\Local\Temp\cclKCCmP.s 			page 3
+
+
+  23:Src/lcd.c     **** 	e_set();//???????? ????? E
+  96              		.loc 1 23 2 is_stmt 1 view .LVU11
+  97 0006 164B     		ldr	r3, .L9
+  98 0008 1878     		ldrb	r0, [r3]	@ zero_extendqisi2
+  99 000a 40F00400 		orr	r0, r0, #4
+ 100 000e 1870     		strb	r0, [r3]
+ 101 0010 FFF7FEFF 		bl	LCD_WriteByteI2CLCD
+ 102              	.LVL5:
+  24:Src/lcd.c     **** 	DelayMicro(50);
+ 103              		.loc 1 24 2 view .LVU12
+ 104 0014 3223     		movs	r3, #50
+ 105              	.LVL6:
+ 106              	.LBB6:
+ 107              	.LBI6:
+   8:Src/lcd.c     **** {
+ 108              		.loc 1 8 22 view .LVU13
+ 109              	.LBB7:
+  10:Src/lcd.c     **** 	while (micros--);
+ 110              		.loc 1 10 2 view .LVU14
+  10:Src/lcd.c     **** 	while (micros--);
+ 111              		.loc 1 10 39 is_stmt 0 view .LVU15
+ 112 0016 134A     		ldr	r2, .L9+4
+ 113 0018 1268     		ldr	r2, [r2]
+ 114 001a 1349     		ldr	r1, .L9+8
+ 115 001c A1FB0212 		umull	r1, r2, r1, r2
+ 116 0020 520D     		lsrs	r2, r2, #21
+  10:Src/lcd.c     **** 	while (micros--);
+ 117              		.loc 1 10 9 view .LVU16
+ 118 0022 03FB02F3 		mul	r3, r3, r2
+  11:Src/lcd.c     **** }
+ 119              		.loc 1 11 2 is_stmt 1 view .LVU17
+ 120              	.L6:
+  11:Src/lcd.c     **** }
+ 121              		.loc 1 11 18 view .LVU18
+  11:Src/lcd.c     **** }
+ 122              		.loc 1 11 8 view .LVU19
+  11:Src/lcd.c     **** }
+ 123              		.loc 1 11 15 is_stmt 0 view .LVU20
+ 124 0026 1A46     		mov	r2, r3
+ 125 0028 013B     		subs	r3, r3, #1
+  11:Src/lcd.c     **** }
+ 126              		.loc 1 11 8 view .LVU21
+ 127 002a 002A     		cmp	r2, #0
+ 128 002c FBD1     		bne	.L6
+ 129              	.LVL7:
+  11:Src/lcd.c     **** }
+ 130              		.loc 1 11 8 view .LVU22
+ 131              	.LBE7:
+ 132              	.LBE6:
+  25:Src/lcd.c     **** 	LCD_WriteByteI2CLCD(portlcd|c);
+ 133              		.loc 1 25 2 is_stmt 1 view .LVU23
+ 134 002e 0C4D     		ldr	r5, .L9
+ 135 0030 2878     		ldrb	r0, [r5]	@ zero_extendqisi2
+ 136 0032 2043     		orrs	r0, r0, r4
+ 137 0034 FFF7FEFF 		bl	LCD_WriteByteI2CLCD
+ 138              	.LVL8:
+  26:Src/lcd.c     **** 	e_reset();//????????? ????? E
+ARM GAS  C:\Users\User\AppData\Local\Temp\cclKCCmP.s 			page 4
+
+
+ 139              		.loc 1 26 2 view .LVU24
+ 140 0038 2878     		ldrb	r0, [r5]	@ zero_extendqisi2
+ 141 003a 00F0FB00 		and	r0, r0, #251
+ 142 003e 2870     		strb	r0, [r5]
+ 143 0040 FFF7FEFF 		bl	LCD_WriteByteI2CLCD
+ 144              	.LVL9:
+  27:Src/lcd.c     **** 	DelayMicro(50);
+ 145              		.loc 1 27 2 view .LVU25
+ 146 0044 3223     		movs	r3, #50
+ 147              	.LVL10:
+ 148              	.LBB8:
+ 149              	.LBI8:
+   8:Src/lcd.c     **** {
+ 150              		.loc 1 8 22 view .LVU26
+ 151              	.LBB9:
+  10:Src/lcd.c     **** 	while (micros--);
+ 152              		.loc 1 10 2 view .LVU27
+  10:Src/lcd.c     **** 	while (micros--);
+ 153              		.loc 1 10 39 is_stmt 0 view .LVU28
+ 154 0046 074A     		ldr	r2, .L9+4
+ 155 0048 1268     		ldr	r2, [r2]
+ 156 004a 0749     		ldr	r1, .L9+8
+ 157 004c A1FB0212 		umull	r1, r2, r1, r2
+ 158 0050 520D     		lsrs	r2, r2, #21
+  10:Src/lcd.c     **** 	while (micros--);
+ 159              		.loc 1 10 9 view .LVU29
+ 160 0052 03FB02F3 		mul	r3, r3, r2
+  11:Src/lcd.c     **** }
+ 161              		.loc 1 11 2 is_stmt 1 view .LVU30
+ 162              	.L7:
+  11:Src/lcd.c     **** }
+ 163              		.loc 1 11 18 view .LVU31
+  11:Src/lcd.c     **** }
+ 164              		.loc 1 11 8 view .LVU32
+  11:Src/lcd.c     **** }
+ 165              		.loc 1 11 15 is_stmt 0 view .LVU33
+ 166 0056 1A46     		mov	r2, r3
+ 167 0058 013B     		subs	r3, r3, #1
+  11:Src/lcd.c     **** }
+ 168              		.loc 1 11 8 view .LVU34
+ 169 005a 002A     		cmp	r2, #0
+ 170 005c FBD1     		bne	.L7
+ 171              	.LBE9:
+ 172              	.LBE8:
+  28:Src/lcd.c     **** }
+ 173              		.loc 1 28 1 view .LVU35
+ 174 005e 38BD     		pop	{r3, r4, r5, pc}
+ 175              	.LVL11:
+ 176              	.L10:
+ 177              		.loc 1 28 1 view .LVU36
+ 178              		.align	2
+ 179              	.L9:
+ 180 0060 00000000 		.word	portlcd
+ 181 0064 00000000 		.word	SystemCoreClock
+ 182 0068 6BCA5F6B 		.word	1801439851
+ 183              		.cfi_endproc
+ 184              	.LFE67:
+ARM GAS  C:\Users\User\AppData\Local\Temp\cclKCCmP.s 			page 5
+
+
+ 186              		.section	.text.sendbyte,"ax",%progbits
+ 187              		.align	1
+ 188              		.global	sendbyte
+ 189              		.syntax unified
+ 190              		.thumb
+ 191              		.thumb_func
+ 192              		.fpu softvfp
+ 194              	sendbyte:
+ 195              	.LVL12:
+ 196              	.LFB68:
+  29:Src/lcd.c     **** //------------------------------------------------
+  30:Src/lcd.c     **** void sendbyte(uint8_t c, uint8_t mode)
+  31:Src/lcd.c     **** {
+ 197              		.loc 1 31 1 is_stmt 1 view -0
+ 198              		.cfi_startproc
+ 199              		@ args = 0, pretend = 0, frame = 0
+ 200              		@ frame_needed = 0, uses_anonymous_args = 0
+ 201              		.loc 1 31 1 is_stmt 0 view .LVU38
+ 202 0000 10B5     		push	{r4, lr}
+ 203              	.LCFI4:
+ 204              		.cfi_def_cfa_offset 8
+ 205              		.cfi_offset 4, -8
+ 206              		.cfi_offset 14, -4
+ 207 0002 0446     		mov	r4, r0
+  32:Src/lcd.c     **** 	if(mode==0) rs_reset();
+ 208              		.loc 1 32 2 is_stmt 1 view .LVU39
+ 209              		.loc 1 32 4 is_stmt 0 view .LVU40
+ 210 0004 69B9     		cbnz	r1, .L12
+ 211              		.loc 1 32 14 is_stmt 1 discriminator 1 view .LVU41
+ 212 0006 0B4B     		ldr	r3, .L15
+ 213 0008 1878     		ldrb	r0, [r3]	@ zero_extendqisi2
+ 214              	.LVL13:
+ 215              		.loc 1 32 14 is_stmt 0 discriminator 1 view .LVU42
+ 216 000a 00F0FE00 		and	r0, r0, #254
+ 217 000e 1870     		strb	r0, [r3]
+ 218 0010 FFF7FEFF 		bl	LCD_WriteByteI2CLCD
+ 219              	.LVL14:
+ 220              	.L13:
+  33:Src/lcd.c     **** 	else rs_set();
+  34:Src/lcd.c     **** 	uint8_t hc=0;
+ 221              		.loc 1 34 2 is_stmt 1 view .LVU43
+  35:Src/lcd.c     **** 	hc=c>>4;
+ 222              		.loc 1 35 2 view .LVU44
+  36:Src/lcd.c     **** 	sendhalfbyte(hc);sendhalfbyte(c);
+ 223              		.loc 1 36 2 view .LVU45
+ 224 0014 2009     		lsrs	r0, r4, #4
+ 225 0016 FFF7FEFF 		bl	sendhalfbyte
+ 226              	.LVL15:
+ 227              		.loc 1 36 19 view .LVU46
+ 228 001a 2046     		mov	r0, r4
+ 229 001c FFF7FEFF 		bl	sendhalfbyte
+ 230              	.LVL16:
+  37:Src/lcd.c     **** }
+ 231              		.loc 1 37 1 is_stmt 0 view .LVU47
+ 232 0020 10BD     		pop	{r4, pc}
+ 233              	.LVL17:
+ 234              	.L12:
+ARM GAS  C:\Users\User\AppData\Local\Temp\cclKCCmP.s 			page 6
+
+
+  33:Src/lcd.c     **** 	uint8_t hc=0;
+ 235              		.loc 1 33 7 is_stmt 1 view .LVU48
+ 236 0022 044B     		ldr	r3, .L15
+ 237 0024 1878     		ldrb	r0, [r3]	@ zero_extendqisi2
+ 238              	.LVL18:
+  33:Src/lcd.c     **** 	uint8_t hc=0;
+ 239              		.loc 1 33 7 is_stmt 0 view .LVU49
+ 240 0026 40F00100 		orr	r0, r0, #1
+ 241 002a 1870     		strb	r0, [r3]
+ 242 002c FFF7FEFF 		bl	LCD_WriteByteI2CLCD
+ 243              	.LVL19:
+  33:Src/lcd.c     **** 	uint8_t hc=0;
+ 244              		.loc 1 33 7 view .LVU50
+ 245 0030 F0E7     		b	.L13
+ 246              	.L16:
+ 247 0032 00BF     		.align	2
+ 248              	.L15:
+ 249 0034 00000000 		.word	portlcd
+ 250              		.cfi_endproc
+ 251              	.LFE68:
+ 253              		.section	.text.LCD_Clear,"ax",%progbits
+ 254              		.align	1
+ 255              		.global	LCD_Clear
+ 256              		.syntax unified
+ 257              		.thumb
+ 258              		.thumb_func
+ 259              		.fpu softvfp
+ 261              	LCD_Clear:
+ 262              	.LFB69:
+  38:Src/lcd.c     **** //------------------------------------------------
+  39:Src/lcd.c     **** void LCD_Clear(void)
+  40:Src/lcd.c     **** {
+ 263              		.loc 1 40 1 is_stmt 1 view -0
+ 264              		.cfi_startproc
+ 265              		@ args = 0, pretend = 0, frame = 0
+ 266              		@ frame_needed = 0, uses_anonymous_args = 0
+ 267 0000 08B5     		push	{r3, lr}
+ 268              	.LCFI5:
+ 269              		.cfi_def_cfa_offset 8
+ 270              		.cfi_offset 3, -8
+ 271              		.cfi_offset 14, -4
+  41:Src/lcd.c     **** 	sendbyte(0x01,0);
+ 272              		.loc 1 41 2 view .LVU52
+ 273 0002 0021     		movs	r1, #0
+ 274 0004 0120     		movs	r0, #1
+ 275 0006 FFF7FEFF 		bl	sendbyte
+ 276              	.LVL20:
+  42:Src/lcd.c     **** 	HAL_Delay(2);
+ 277              		.loc 1 42 2 view .LVU53
+ 278 000a 0220     		movs	r0, #2
+ 279 000c FFF7FEFF 		bl	HAL_Delay
+ 280              	.LVL21:
+  43:Src/lcd.c     **** }
+ 281              		.loc 1 43 1 is_stmt 0 view .LVU54
+ 282 0010 08BD     		pop	{r3, pc}
+ 283              		.cfi_endproc
+ 284              	.LFE69:
+ARM GAS  C:\Users\User\AppData\Local\Temp\cclKCCmP.s 			page 7
+
+
+ 286              		.section	.text.LCD_SendChar,"ax",%progbits
+ 287              		.align	1
+ 288              		.global	LCD_SendChar
+ 289              		.syntax unified
+ 290              		.thumb
+ 291              		.thumb_func
+ 292              		.fpu softvfp
+ 294              	LCD_SendChar:
+ 295              	.LVL22:
+ 296              	.LFB70:
+  44:Src/lcd.c     **** //------------------------------------------------
+  45:Src/lcd.c     **** void LCD_SendChar(char ch)
+  46:Src/lcd.c     **** {
+ 297              		.loc 1 46 1 is_stmt 1 view -0
+ 298              		.cfi_startproc
+ 299              		@ args = 0, pretend = 0, frame = 0
+ 300              		@ frame_needed = 0, uses_anonymous_args = 0
+ 301              		.loc 1 46 1 is_stmt 0 view .LVU56
+ 302 0000 08B5     		push	{r3, lr}
+ 303              	.LCFI6:
+ 304              		.cfi_def_cfa_offset 8
+ 305              		.cfi_offset 3, -8
+ 306              		.cfi_offset 14, -4
+  47:Src/lcd.c     **** 	sendbyte(ch,1);
+ 307              		.loc 1 47 2 is_stmt 1 view .LVU57
+ 308 0002 0121     		movs	r1, #1
+ 309 0004 FFF7FEFF 		bl	sendbyte
+ 310              	.LVL23:
+  48:Src/lcd.c     **** }
+ 311              		.loc 1 48 1 is_stmt 0 view .LVU58
+ 312 0008 08BD     		pop	{r3, pc}
+ 313              		.cfi_endproc
+ 314              	.LFE70:
+ 316              		.section	.text.LCD_String,"ax",%progbits
+ 317              		.align	1
+ 318              		.global	LCD_String
+ 319              		.syntax unified
+ 320              		.thumb
+ 321              		.thumb_func
+ 322              		.fpu softvfp
+ 324              	LCD_String:
+ 325              	.LVL24:
+ 326              	.LFB71:
+  49:Src/lcd.c     **** //------------------------------------------------
+  50:Src/lcd.c     **** void LCD_String(char* st)
+  51:Src/lcd.c     **** {
+ 327              		.loc 1 51 1 is_stmt 1 view -0
+ 328              		.cfi_startproc
+ 329              		@ args = 0, pretend = 0, frame = 0
+ 330              		@ frame_needed = 0, uses_anonymous_args = 0
+ 331              		.loc 1 51 1 is_stmt 0 view .LVU60
+ 332 0000 38B5     		push	{r3, r4, r5, lr}
+ 333              	.LCFI7:
+ 334              		.cfi_def_cfa_offset 16
+ 335              		.cfi_offset 3, -16
+ 336              		.cfi_offset 4, -12
+ 337              		.cfi_offset 5, -8
+ARM GAS  C:\Users\User\AppData\Local\Temp\cclKCCmP.s 			page 8
+
+
+ 338              		.cfi_offset 14, -4
+ 339 0002 0546     		mov	r5, r0
+  52:Src/lcd.c     **** 	uint8_t i=0;
+ 340              		.loc 1 52 2 is_stmt 1 view .LVU61
+ 341              	.LVL25:
+  53:Src/lcd.c     **** 	while(st[i]!=0)
+ 342              		.loc 1 53 2 view .LVU62
+  52:Src/lcd.c     **** 	uint8_t i=0;
+ 343              		.loc 1 52 10 is_stmt 0 view .LVU63
+ 344 0004 0024     		movs	r4, #0
+ 345              	.LVL26:
+ 346              	.L22:
+ 347              		.loc 1 53 7 is_stmt 1 view .LVU64
+ 348              		.loc 1 53 10 is_stmt 0 view .LVU65
+ 349 0006 285D     		ldrb	r0, [r5, r4]	@ zero_extendqisi2
+ 350              		.loc 1 53 7 view .LVU66
+ 351 0008 28B1     		cbz	r0, .L25
+  54:Src/lcd.c     **** 	{
+  55:Src/lcd.c     **** 		sendbyte(st[i],1);
+ 352              		.loc 1 55 3 is_stmt 1 view .LVU67
+ 353 000a 0121     		movs	r1, #1
+ 354 000c FFF7FEFF 		bl	sendbyte
+ 355              	.LVL27:
+  56:Src/lcd.c     **** 		i++;
+ 356              		.loc 1 56 3 view .LVU68
+ 357              		.loc 1 56 4 is_stmt 0 view .LVU69
+ 358 0010 0134     		adds	r4, r4, #1
+ 359              	.LVL28:
+ 360              		.loc 1 56 4 view .LVU70
+ 361 0012 E4B2     		uxtb	r4, r4
+ 362              	.LVL29:
+ 363              		.loc 1 56 4 view .LVU71
+ 364 0014 F7E7     		b	.L22
+ 365              	.L25:
+  57:Src/lcd.c     **** 	}
+  58:Src/lcd.c     **** }
+ 366              		.loc 1 58 1 view .LVU72
+ 367 0016 38BD     		pop	{r3, r4, r5, pc}
+ 368              		.loc 1 58 1 view .LVU73
+ 369              		.cfi_endproc
+ 370              	.LFE71:
+ 372              		.section	.text.LCD_SetPos,"ax",%progbits
+ 373              		.align	1
+ 374              		.global	LCD_SetPos
+ 375              		.syntax unified
+ 376              		.thumb
+ 377              		.thumb_func
+ 378              		.fpu softvfp
+ 380              	LCD_SetPos:
+ 381              	.LVL30:
+ 382              	.LFB72:
+  59:Src/lcd.c     **** //------------------------------------------------
+  60:Src/lcd.c     **** void LCD_SetPos(uint8_t x, uint8_t y)
+  61:Src/lcd.c     **** {
+ 383              		.loc 1 61 1 is_stmt 1 view -0
+ 384              		.cfi_startproc
+ 385              		@ args = 0, pretend = 0, frame = 0
+ARM GAS  C:\Users\User\AppData\Local\Temp\cclKCCmP.s 			page 9
+
+
+ 386              		@ frame_needed = 0, uses_anonymous_args = 0
+ 387              		.loc 1 61 1 is_stmt 0 view .LVU75
+ 388 0000 08B5     		push	{r3, lr}
+ 389              	.LCFI8:
+ 390              		.cfi_def_cfa_offset 8
+ 391              		.cfi_offset 3, -8
+ 392              		.cfi_offset 14, -4
+  62:Src/lcd.c     **** 	switch(y)
+ 393              		.loc 1 62 2 is_stmt 1 view .LVU76
+ 394 0002 0329     		cmp	r1, #3
+ 395 0004 0BD8     		bhi	.L26
+ 396 0006 DFE801F0 		tbb	[pc, r1]
+ 397              	.L29:
+ 398 000a 02       		.byte	(.L32-.L29)/2
+ 399 000b 0B       		.byte	(.L31-.L29)/2
+ 400 000c 17       		.byte	(.L30-.L29)/2
+ 401 000d 23       		.byte	(.L28-.L29)/2
+ 402              		.p2align 1
+ 403              	.L32:
+  63:Src/lcd.c     **** 	{
+  64:Src/lcd.c     **** 		case 0:
+  65:Src/lcd.c     **** 			sendbyte(x|0x80,0);
+ 404              		.loc 1 65 4 view .LVU77
+ 405 000e 0021     		movs	r1, #0
+ 406              	.LVL31:
+ 407              		.loc 1 65 4 is_stmt 0 view .LVU78
+ 408 0010 40F08000 		orr	r0, r0, #128
+ 409              	.LVL32:
+ 410              		.loc 1 65 4 view .LVU79
+ 411 0014 FFF7FEFF 		bl	sendbyte
+ 412              	.LVL33:
+  66:Src/lcd.c     **** 			HAL_Delay(1);
+ 413              		.loc 1 66 4 is_stmt 1 view .LVU80
+ 414 0018 0120     		movs	r0, #1
+ 415 001a FFF7FEFF 		bl	HAL_Delay
+ 416              	.LVL34:
+  67:Src/lcd.c     **** 			break;
+ 417              		.loc 1 67 4 view .LVU81
+ 418              	.L26:
+  68:Src/lcd.c     **** 		case 1:
+  69:Src/lcd.c     **** 			sendbyte((0x40+x)|0x80,0);
+  70:Src/lcd.c     **** 			HAL_Delay(1);
+  71:Src/lcd.c     **** 			break;
+  72:Src/lcd.c     **** 		case 2:
+  73:Src/lcd.c     **** 			sendbyte((0x14+x)|0x80,0);
+  74:Src/lcd.c     **** 			HAL_Delay(1);
+  75:Src/lcd.c     **** 			break;
+  76:Src/lcd.c     **** 		case 3:
+  77:Src/lcd.c     **** 			sendbyte((0x54+x)|0x80,0);
+  78:Src/lcd.c     **** 			HAL_Delay(1);
+  79:Src/lcd.c     **** 			break;
+  80:Src/lcd.c     **** 	}
+  81:Src/lcd.c     **** }
+ 419              		.loc 1 81 1 is_stmt 0 view .LVU82
+ 420 001e 08BD     		pop	{r3, pc}
+ 421              	.LVL35:
+ 422              	.L31:
+ARM GAS  C:\Users\User\AppData\Local\Temp\cclKCCmP.s 			page 10
+
+
+  69:Src/lcd.c     **** 			HAL_Delay(1);
+ 423              		.loc 1 69 4 is_stmt 1 view .LVU83
+  69:Src/lcd.c     **** 			HAL_Delay(1);
+ 424              		.loc 1 69 18 is_stmt 0 view .LVU84
+ 425 0020 4030     		adds	r0, r0, #64
+ 426              	.LVL36:
+  69:Src/lcd.c     **** 			HAL_Delay(1);
+ 427              		.loc 1 69 18 view .LVU85
+ 428 0022 40B2     		sxtb	r0, r0
+  69:Src/lcd.c     **** 			HAL_Delay(1);
+ 429              		.loc 1 69 21 view .LVU86
+ 430 0024 60F07F00 		orn	r0, r0, #127
+  69:Src/lcd.c     **** 			HAL_Delay(1);
+ 431              		.loc 1 69 4 view .LVU87
+ 432 0028 0021     		movs	r1, #0
+ 433              	.LVL37:
+  69:Src/lcd.c     **** 			HAL_Delay(1);
+ 434              		.loc 1 69 4 view .LVU88
+ 435 002a C0B2     		uxtb	r0, r0
+ 436 002c FFF7FEFF 		bl	sendbyte
+ 437              	.LVL38:
+  70:Src/lcd.c     **** 			break;
+ 438              		.loc 1 70 4 is_stmt 1 view .LVU89
+ 439 0030 0120     		movs	r0, #1
+ 440 0032 FFF7FEFF 		bl	HAL_Delay
+ 441              	.LVL39:
+  71:Src/lcd.c     **** 		case 2:
+ 442              		.loc 1 71 4 view .LVU90
+ 443 0036 F2E7     		b	.L26
+ 444              	.LVL40:
+ 445              	.L30:
+  73:Src/lcd.c     **** 			HAL_Delay(1);
+ 446              		.loc 1 73 4 view .LVU91
+  73:Src/lcd.c     **** 			HAL_Delay(1);
+ 447              		.loc 1 73 18 is_stmt 0 view .LVU92
+ 448 0038 1430     		adds	r0, r0, #20
+ 449              	.LVL41:
+  73:Src/lcd.c     **** 			HAL_Delay(1);
+ 450              		.loc 1 73 18 view .LVU93
+ 451 003a 40B2     		sxtb	r0, r0
+  73:Src/lcd.c     **** 			HAL_Delay(1);
+ 452              		.loc 1 73 21 view .LVU94
+ 453 003c 60F07F00 		orn	r0, r0, #127
+  73:Src/lcd.c     **** 			HAL_Delay(1);
+ 454              		.loc 1 73 4 view .LVU95
+ 455 0040 0021     		movs	r1, #0
+ 456              	.LVL42:
+  73:Src/lcd.c     **** 			HAL_Delay(1);
+ 457              		.loc 1 73 4 view .LVU96
+ 458 0042 C0B2     		uxtb	r0, r0
+ 459 0044 FFF7FEFF 		bl	sendbyte
+ 460              	.LVL43:
+  74:Src/lcd.c     **** 			break;
+ 461              		.loc 1 74 4 is_stmt 1 view .LVU97
+ 462 0048 0120     		movs	r0, #1
+ 463 004a FFF7FEFF 		bl	HAL_Delay
+ 464              	.LVL44:
+ARM GAS  C:\Users\User\AppData\Local\Temp\cclKCCmP.s 			page 11
+
+
+  75:Src/lcd.c     **** 		case 3:
+ 465              		.loc 1 75 4 view .LVU98
+ 466 004e E6E7     		b	.L26
+ 467              	.LVL45:
+ 468              	.L28:
+  77:Src/lcd.c     **** 			HAL_Delay(1);
+ 469              		.loc 1 77 4 view .LVU99
+  77:Src/lcd.c     **** 			HAL_Delay(1);
+ 470              		.loc 1 77 18 is_stmt 0 view .LVU100
+ 471 0050 5430     		adds	r0, r0, #84
+ 472              	.LVL46:
+  77:Src/lcd.c     **** 			HAL_Delay(1);
+ 473              		.loc 1 77 18 view .LVU101
+ 474 0052 40B2     		sxtb	r0, r0
+  77:Src/lcd.c     **** 			HAL_Delay(1);
+ 475              		.loc 1 77 21 view .LVU102
+ 476 0054 60F07F00 		orn	r0, r0, #127
+  77:Src/lcd.c     **** 			HAL_Delay(1);
+ 477              		.loc 1 77 4 view .LVU103
+ 478 0058 0021     		movs	r1, #0
+ 479              	.LVL47:
+  77:Src/lcd.c     **** 			HAL_Delay(1);
+ 480              		.loc 1 77 4 view .LVU104
+ 481 005a C0B2     		uxtb	r0, r0
+ 482 005c FFF7FEFF 		bl	sendbyte
+ 483              	.LVL48:
+  78:Src/lcd.c     **** 			break;
+ 484              		.loc 1 78 4 is_stmt 1 view .LVU105
+ 485 0060 0120     		movs	r0, #1
+ 486 0062 FFF7FEFF 		bl	HAL_Delay
+ 487              	.LVL49:
+  79:Src/lcd.c     **** 	}
+ 488              		.loc 1 79 4 view .LVU106
+ 489              		.loc 1 81 1 is_stmt 0 view .LVU107
+ 490 0066 DAE7     		b	.L26
+ 491              		.cfi_endproc
+ 492              	.LFE72:
+ 494              		.section	.text.LCD_ini,"ax",%progbits
+ 495              		.align	1
+ 496              		.global	LCD_ini
+ 497              		.syntax unified
+ 498              		.thumb
+ 499              		.thumb_func
+ 500              		.fpu softvfp
+ 502              	LCD_ini:
+ 503              	.LFB73:
+  82:Src/lcd.c     **** //------------------------------------------------
+  83:Src/lcd.c     **** void LCD_ini(void)
+  84:Src/lcd.c     **** {
+ 504              		.loc 1 84 1 is_stmt 1 view -0
+ 505              		.cfi_startproc
+ 506              		@ args = 0, pretend = 0, frame = 0
+ 507              		@ frame_needed = 0, uses_anonymous_args = 0
+ 508 0000 10B5     		push	{r4, lr}
+ 509              	.LCFI9:
+ 510              		.cfi_def_cfa_offset 8
+ 511              		.cfi_offset 4, -8
+ARM GAS  C:\Users\User\AppData\Local\Temp\cclKCCmP.s 			page 12
+
+
+ 512              		.cfi_offset 14, -4
+  85:Src/lcd.c     **** 	HAL_Delay(100);
+ 513              		.loc 1 85 2 view .LVU109
+ 514 0002 6420     		movs	r0, #100
+ 515 0004 FFF7FEFF 		bl	HAL_Delay
+ 516              	.LVL50:
+  86:Src/lcd.c     ****   sendhalfbyte(0x33); // Initialize controller
+ 517              		.loc 1 86 3 view .LVU110
+ 518 0008 3320     		movs	r0, #51
+ 519 000a FFF7FEFF 		bl	sendhalfbyte
+ 520              	.LVL51:
+  87:Src/lcd.c     ****   sendhalfbyte(0x32); // Set 4-bit mode
+ 521              		.loc 1 87 3 view .LVU111
+ 522 000e 3220     		movs	r0, #50
+ 523 0010 FFF7FEFF 		bl	sendhalfbyte
+ 524              	.LVL52:
+  88:Src/lcd.c     ****   sendhalfbyte(0x28); // 4 bit, 2 line, 5x7
+ 525              		.loc 1 88 3 view .LVU112
+ 526 0014 2820     		movs	r0, #40
+ 527 0016 FFF7FEFF 		bl	sendhalfbyte
+ 528              	.LVL53:
+  89:Src/lcd.c     ****   sendhalfbyte(0x06); // Cursor direction -> right
+ 529              		.loc 1 89 3 view .LVU113
+ 530 001a 0620     		movs	r0, #6
+ 531 001c FFF7FEFF 		bl	sendhalfbyte
+ 532              	.LVL54:
+  90:Src/lcd.c     ****   sendhalfbyte(0x0C); // Display on, cursor off
+ 533              		.loc 1 90 3 view .LVU114
+ 534 0020 0C20     		movs	r0, #12
+ 535 0022 FFF7FEFF 		bl	sendhalfbyte
+ 536              	.LVL55:
+  91:Src/lcd.c     ****   sendhalfbyte(0x01); // Clear display
+ 537              		.loc 1 91 3 view .LVU115
+ 538 0026 0120     		movs	r0, #1
+ 539 0028 FFF7FEFF 		bl	sendhalfbyte
+ 540              	.LVL56:
+  92:Src/lcd.c     ****   HAL_Delay(100);
+ 541              		.loc 1 92 3 view .LVU116
+ 542 002c 6420     		movs	r0, #100
+ 543 002e FFF7FEFF 		bl	HAL_Delay
+ 544              	.LVL57:
+  93:Src/lcd.c     **** 	
+  94:Src/lcd.c     **** 	
+  95:Src/lcd.c     **** 	setled();//?????????
+ 545              		.loc 1 95 2 view .LVU117
+ 546 0032 074C     		ldr	r4, .L36
+ 547 0034 2078     		ldrb	r0, [r4]	@ zero_extendqisi2
+ 548 0036 40F00800 		orr	r0, r0, #8
+ 549 003a 2070     		strb	r0, [r4]
+ 550 003c FFF7FEFF 		bl	LCD_WriteByteI2CLCD
+ 551              	.LVL58:
+  96:Src/lcd.c     **** 	setwrite();//??????
+ 552              		.loc 1 96 2 view .LVU118
+ 553 0040 2078     		ldrb	r0, [r4]	@ zero_extendqisi2
+ 554 0042 00F0FD00 		and	r0, r0, #253
+ 555 0046 2070     		strb	r0, [r4]
+ 556 0048 FFF7FEFF 		bl	LCD_WriteByteI2CLCD
+ARM GAS  C:\Users\User\AppData\Local\Temp\cclKCCmP.s 			page 13
+
+
+ 557              	.LVL59:
+  97:Src/lcd.c     **** }
+ 558              		.loc 1 97 1 is_stmt 0 view .LVU119
+ 559 004c 10BD     		pop	{r4, pc}
+ 560              	.L37:
+ 561 004e 00BF     		.align	2
+ 562              	.L36:
+ 563 0050 00000000 		.word	portlcd
+ 564              		.cfi_endproc
+ 565              	.LFE73:
+ 567              		.comm	portlcd,1,1
+ 568              		.comm	str1,100,4
+ 569              		.global	buf
+ 570              		.section	.bss.buf,"aw",%nobits
+ 571              		.align	2
+ 572              		.set	.LANCHOR0,. + 0
+ 575              	buf:
+ 576 0000 00       		.space	1
+ 577              		.text
+ 578              	.Letext0:
+ 579              		.file 2 "c:\\users\\user\\.vscode\\extensions\\buzzyelectronics.stm-helper-1.2.9\\armgcc\\arm-none
+ 580              		.file 3 "c:\\users\\user\\.vscode\\extensions\\buzzyelectronics.stm-helper-1.2.9\\armgcc\\arm-none
+ 581              		.file 4 "Drivers/CMSIS/Include/core_cm3.h"
+ 582              		.file 5 "Drivers/CMSIS/Device/ST/STM32F1xx/Include/system_stm32f1xx.h"
+ 583              		.file 6 "Drivers/CMSIS/Device/ST/STM32F1xx/Include/stm32f103xb.h"
+ 584              		.file 7 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_def.h"
+ 585              		.file 8 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_dma.h"
+ 586              		.file 9 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_i2c.h"
+ 587              		.file 10 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h"
+ARM GAS  C:\Users\User\AppData\Local\Temp\cclKCCmP.s 			page 14
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 lcd.c
+C:\Users\User\AppData\Local\Temp\cclKCCmP.s:16     .text.LCD_WriteByteI2CLCD:0000000000000000 $t
+C:\Users\User\AppData\Local\Temp\cclKCCmP.s:24     .text.LCD_WriteByteI2CLCD:0000000000000000 LCD_WriteByteI2CLCD
+C:\Users\User\AppData\Local\Temp\cclKCCmP.s:63     .text.LCD_WriteByteI2CLCD:0000000000000020 $d
+C:\Users\User\AppData\Local\Temp\cclKCCmP.s:69     .text.sendhalfbyte:0000000000000000 $t
+C:\Users\User\AppData\Local\Temp\cclKCCmP.s:76     .text.sendhalfbyte:0000000000000000 sendhalfbyte
+C:\Users\User\AppData\Local\Temp\cclKCCmP.s:180    .text.sendhalfbyte:0000000000000060 $d
+                            *COM*:0000000000000001 portlcd
+C:\Users\User\AppData\Local\Temp\cclKCCmP.s:187    .text.sendbyte:0000000000000000 $t
+C:\Users\User\AppData\Local\Temp\cclKCCmP.s:194    .text.sendbyte:0000000000000000 sendbyte
+C:\Users\User\AppData\Local\Temp\cclKCCmP.s:249    .text.sendbyte:0000000000000034 $d
+C:\Users\User\AppData\Local\Temp\cclKCCmP.s:254    .text.LCD_Clear:0000000000000000 $t
+C:\Users\User\AppData\Local\Temp\cclKCCmP.s:261    .text.LCD_Clear:0000000000000000 LCD_Clear
+C:\Users\User\AppData\Local\Temp\cclKCCmP.s:287    .text.LCD_SendChar:0000000000000000 $t
+C:\Users\User\AppData\Local\Temp\cclKCCmP.s:294    .text.LCD_SendChar:0000000000000000 LCD_SendChar
+C:\Users\User\AppData\Local\Temp\cclKCCmP.s:317    .text.LCD_String:0000000000000000 $t
+C:\Users\User\AppData\Local\Temp\cclKCCmP.s:324    .text.LCD_String:0000000000000000 LCD_String
+C:\Users\User\AppData\Local\Temp\cclKCCmP.s:373    .text.LCD_SetPos:0000000000000000 $t
+C:\Users\User\AppData\Local\Temp\cclKCCmP.s:380    .text.LCD_SetPos:0000000000000000 LCD_SetPos
+C:\Users\User\AppData\Local\Temp\cclKCCmP.s:398    .text.LCD_SetPos:000000000000000a $d
+C:\Users\User\AppData\Local\Temp\cclKCCmP.s:402    .text.LCD_SetPos:000000000000000e $t
+C:\Users\User\AppData\Local\Temp\cclKCCmP.s:495    .text.LCD_ini:0000000000000000 $t
+C:\Users\User\AppData\Local\Temp\cclKCCmP.s:502    .text.LCD_ini:0000000000000000 LCD_ini
+C:\Users\User\AppData\Local\Temp\cclKCCmP.s:563    .text.LCD_ini:0000000000000050 $d
+                            *COM*:0000000000000064 str1
+C:\Users\User\AppData\Local\Temp\cclKCCmP.s:575    .bss.buf:0000000000000000 buf
+C:\Users\User\AppData\Local\Temp\cclKCCmP.s:571    .bss.buf:0000000000000000 $d
+
+UNDEFINED SYMBOLS
+HAL_I2C_Master_Transmit
+hi2c1
+SystemCoreClock
+HAL_Delay

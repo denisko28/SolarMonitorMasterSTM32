@@ -1,0 +1,1014 @@
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccTVdntc.s 			page 1
+
+
+   1              		.cpu cortex-m3
+   2              		.eabi_attribute 20, 1
+   3              		.eabi_attribute 21, 1
+   4              		.eabi_attribute 23, 3
+   5              		.eabi_attribute 24, 1
+   6              		.eabi_attribute 25, 1
+   7              		.eabi_attribute 26, 1
+   8              		.eabi_attribute 30, 1
+   9              		.eabi_attribute 34, 1
+  10              		.eabi_attribute 18, 4
+  11              		.file	"ModbusRtu.c"
+  12              		.text
+  13              	.Ltext0:
+  14              		.cfi_sections	.debug_frame
+  15              		.section	.text.StartMB,"ax",%progbits
+  16              		.align	1
+  17              		.global	StartMB
+  18              		.arch armv7-m
+  19              		.syntax unified
+  20              		.thumb
+  21              		.thumb_func
+  22              		.fpu softvfp
+  24              	StartMB:
+  25              	.LFB68:
+  26              		.file 1 "Src/ModbusRtu.c"
+   1:Src/ModbusRtu.c **** #include "ModbusRtu.h"
+   2:Src/ModbusRtu.c **** #include "main.h"
+   3:Src/ModbusRtu.c **** 
+   4:Src/ModbusRtu.c **** uint8_t u8id = 0;
+   5:Src/ModbusRtu.c **** uint8_t u8BufferSize = 6;
+   6:Src/ModbusRtu.c **** uint16_t u16InCnt, u16OutCnt, u16errCnt = 0;
+   7:Src/ModbusRtu.c **** uint16_t au16regs[16];
+   8:Src/ModbusRtu.c **** uint8_t au8Buffer[64];
+   9:Src/ModbusRtu.c **** char stri[12] = {0};
+  10:Src/ModbusRtu.c **** 
+  11:Src/ModbusRtu.c **** 
+  12:Src/ModbusRtu.c **** int16_t makeWord(uint8_t h, uint8_t l);
+  13:Src/ModbusRtu.c **** 
+  14:Src/ModbusRtu.c **** 
+  15:Src/ModbusRtu.c **** enum MESSAGE
+  16:Src/ModbusRtu.c **** {
+  17:Src/ModbusRtu.c ****     ID = 0, //!< ID field
+  18:Src/ModbusRtu.c ****     FUNC, //!< Function code position
+  19:Src/ModbusRtu.c ****     ADD_HI, //!< Address high byte
+  20:Src/ModbusRtu.c ****     ADD_LO, //!< Address low byte
+  21:Src/ModbusRtu.c ****     NB_HI, //!< Number of coils or registers high byte
+  22:Src/ModbusRtu.c ****     NB_LO, //!< Number of coils or registers low byte
+  23:Src/ModbusRtu.c ****     BYTE_CNT  //!< byte counter
+  24:Src/ModbusRtu.c **** };
+  25:Src/ModbusRtu.c **** 
+  26:Src/ModbusRtu.c **** void StartMB()
+  27:Src/ModbusRtu.c **** {
+  27              		.loc 1 27 1 view -0
+  28              		.cfi_startproc
+  29              		@ args = 0, pretend = 0, frame = 0
+  30              		@ frame_needed = 0, uses_anonymous_args = 0
+  31 0000 08B5     		push	{r3, lr}
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccTVdntc.s 			page 2
+
+
+  32              	.LCFI0:
+  33              		.cfi_def_cfa_offset 8
+  34              		.cfi_offset 3, -8
+  35              		.cfi_offset 14, -4
+  28:Src/ModbusRtu.c **** 	// set RS485 transceiver to receive mode
+  29:Src/ModbusRtu.c **** 	HAL_GPIO_WritePin(RS485_RTS_GPIO_Port, RS485_RTS_Pin, GPIO_PIN_RESET);
+  36              		.loc 1 29 2 view .LVU1
+  37 0002 0022     		movs	r2, #0
+  38 0004 4FF48071 		mov	r1, #256
+  39 0008 0148     		ldr	r0, .L3
+  40 000a FFF7FEFF 		bl	HAL_GPIO_WritePin
+  41              	.LVL0:
+  30:Src/ModbusRtu.c **** }
+  42              		.loc 1 30 1 is_stmt 0 view .LVU2
+  43 000e 08BD     		pop	{r3, pc}
+  44              	.L4:
+  45              		.align	2
+  46              	.L3:
+  47 0010 00080140 		.word	1073809408
+  48              		.cfi_endproc
+  49              	.LFE68:
+  51              		.section	.text.get_FC3,"ax",%progbits
+  52              		.align	1
+  53              		.global	get_FC3
+  54              		.syntax unified
+  55              		.thumb
+  56              		.thumb_func
+  57              		.fpu softvfp
+  59              	get_FC3:
+  60              	.LVL1:
+  61              	.LFB71:
+  31:Src/ModbusRtu.c **** 
+  32:Src/ModbusRtu.c **** char* MBGetQuery(UART_HandleTypeDef *huart,  uint16_t regAdress, uint16_t regNum)
+  33:Src/ModbusRtu.c **** {
+  34:Src/ModbusRtu.c **** 	au8Buffer[ID] = 1;
+  35:Src/ModbusRtu.c **** 	au8Buffer[ FUNC ] = 3;
+  36:Src/ModbusRtu.c **** 	au8Buffer[ ADD_HI ] = highByte(regAdress);
+  37:Src/ModbusRtu.c **** 	au8Buffer[ ADD_LO ] = lowByte(regAdress);
+  38:Src/ModbusRtu.c **** 	au8Buffer[ NB_HI ] = highByte(regNum);
+  39:Src/ModbusRtu.c **** 	au8Buffer[ NB_LO ] = lowByte(regNum);
+  40:Src/ModbusRtu.c **** 	sendTxBuffer(huart, regNum);
+  41:Src/ModbusRtu.c **** 
+  42:Src/ModbusRtu.c **** 	return getRxBuffer(huart, regNum);
+  43:Src/ModbusRtu.c **** }
+  44:Src/ModbusRtu.c **** 
+  45:Src/ModbusRtu.c **** char* getRxBuffer(UART_HandleTypeDef *huart, uint8_t regNum)
+  46:Src/ModbusRtu.c **** {
+  47:Src/ModbusRtu.c **** 	memset(stri, 0x00, 12);
+  48:Src/ModbusRtu.c **** 	
+  49:Src/ModbusRtu.c **** 	const uint32_t beginTime = HAL_GetTick();
+  50:Src/ModbusRtu.c **** 	while(huart->RxXferCount != 0){
+  51:Src/ModbusRtu.c **** 		HAL_Delay(100);
+  52:Src/ModbusRtu.c **** 		if(HAL_GetTick() - beginTime > 1000){
+  53:Src/ModbusRtu.c **** 			AddException('7');
+  54:Src/ModbusRtu.c **** 			strcpy(stri, "0.1");
+  55:Src/ModbusRtu.c **** 			HAL_UART_AbortReceive(huart);
+  56:Src/ModbusRtu.c **** 			return stri;
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccTVdntc.s 			page 3
+
+
+  57:Src/ModbusRtu.c **** 		}
+  58:Src/ModbusRtu.c **** 	}
+  59:Src/ModbusRtu.c **** 
+  60:Src/ModbusRtu.c **** 	DelException('7');
+  61:Src/ModbusRtu.c **** 	u8BufferSize = 0;
+  62:Src/ModbusRtu.c **** 	get_FC3(regNum);
+  63:Src/ModbusRtu.c **** 	
+  64:Src/ModbusRtu.c **** 	
+  65:Src/ModbusRtu.c **** 	if(regNum == 2)
+  66:Src/ModbusRtu.c **** 		sprintf(stri, "%d", (au16regs[0]*65536+au16regs[1]));
+  67:Src/ModbusRtu.c **** 	else
+  68:Src/ModbusRtu.c **** 		sprintf(stri, "%d", au16regs[0]);
+  69:Src/ModbusRtu.c **** 
+  70:Src/ModbusRtu.c **** 	if(stri[0] == '0' && strlen(stri)>2)
+  71:Src/ModbusRtu.c **** 	{
+  72:Src/ModbusRtu.c **** 		memmove(stri, stri+1, strlen(stri));
+  73:Src/ModbusRtu.c **** 	}
+  74:Src/ModbusRtu.c **** 	uint8_t striLen = strlen(stri);		
+  75:Src/ModbusRtu.c **** 	if(striLen > 1)
+  76:Src/ModbusRtu.c **** 	{
+  77:Src/ModbusRtu.c **** 		stri[striLen] = stri[striLen-1];
+  78:Src/ModbusRtu.c **** 		stri[striLen-1] = '.';
+  79:Src/ModbusRtu.c **** 	}
+  80:Src/ModbusRtu.c **** 	
+  81:Src/ModbusRtu.c **** 	return stri;
+  82:Src/ModbusRtu.c **** }
+  83:Src/ModbusRtu.c **** 
+  84:Src/ModbusRtu.c **** void get_FC3(uint8_t regNum)
+  85:Src/ModbusRtu.c **** {
+  62              		.loc 1 85 1 is_stmt 1 view -0
+  63              		.cfi_startproc
+  64              		@ args = 0, pretend = 0, frame = 0
+  65              		@ frame_needed = 0, uses_anonymous_args = 0
+  66              		@ link register save eliminated.
+  86:Src/ModbusRtu.c **** 	uint8_t u8byte;
+  67              		.loc 1 86 2 view .LVU4
+  87:Src/ModbusRtu.c **** 	u8byte = 3;
+  68              		.loc 1 87 2 view .LVU5
+  88:Src/ModbusRtu.c **** 
+  89:Src/ModbusRtu.c **** 	au16regs[0] = ((uint16_t)au8Buffer[ u8byte ] << 8) | au8Buffer[ u8byte+1 ];
+  69              		.loc 1 89 2 view .LVU6
+  70              		.loc 1 89 36 is_stmt 0 view .LVU7
+  71 0000 084A     		ldr	r2, .L8
+  72 0002 D178     		ldrb	r1, [r2, #3]	@ zero_extendqisi2
+  73              		.loc 1 89 64 view .LVU8
+  74 0004 1379     		ldrb	r3, [r2, #4]	@ zero_extendqisi2
+  75              		.loc 1 89 53 view .LVU9
+  76 0006 43EA0123 		orr	r3, r3, r1, lsl #8
+  77              		.loc 1 89 14 view .LVU10
+  78 000a 074A     		ldr	r2, .L8+4
+  79 000c 1380     		strh	r3, [r2]	@ movhi
+  90:Src/ModbusRtu.c **** 
+  91:Src/ModbusRtu.c **** 	if(regNum == 2)
+  80              		.loc 1 91 2 is_stmt 1 view .LVU11
+  81              		.loc 1 91 4 is_stmt 0 view .LVU12
+  82 000e 0228     		cmp	r0, #2
+  83 0010 00D0     		beq	.L7
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccTVdntc.s 			page 4
+
+
+  84              	.L5:
+  92:Src/ModbusRtu.c **** 	{
+  93:Src/ModbusRtu.c **** 		au16regs[1] = ((uint16_t)au8Buffer[ u8byte+2 ] << 8) | au8Buffer[ u8byte+3 ];
+  94:Src/ModbusRtu.c **** 	}
+  95:Src/ModbusRtu.c **** }
+  85              		.loc 1 95 1 view .LVU13
+  86 0012 7047     		bx	lr
+  87              	.L7:
+  93:Src/ModbusRtu.c **** 	}
+  88              		.loc 1 93 3 is_stmt 1 view .LVU14
+  93:Src/ModbusRtu.c **** 	}
+  89              		.loc 1 93 37 is_stmt 0 view .LVU15
+  90 0014 034A     		ldr	r2, .L8
+  91 0016 5179     		ldrb	r1, [r2, #5]	@ zero_extendqisi2
+  93:Src/ModbusRtu.c **** 	}
+  92              		.loc 1 93 67 view .LVU16
+  93 0018 9379     		ldrb	r3, [r2, #6]	@ zero_extendqisi2
+  93:Src/ModbusRtu.c **** 	}
+  94              		.loc 1 93 56 view .LVU17
+  95 001a 43EA0123 		orr	r3, r3, r1, lsl #8
+  93:Src/ModbusRtu.c **** 	}
+  96              		.loc 1 93 15 view .LVU18
+  97 001e 024A     		ldr	r2, .L8+4
+  98 0020 5380     		strh	r3, [r2, #2]	@ movhi
+  99              		.loc 1 95 1 view .LVU19
+ 100 0022 F6E7     		b	.L5
+ 101              	.L9:
+ 102              		.align	2
+ 103              	.L8:
+ 104 0024 00000000 		.word	au8Buffer
+ 105 0028 00000000 		.word	au16regs
+ 106              		.cfi_endproc
+ 107              	.LFE71:
+ 109              		.section	.rodata.getRxBuffer.str1.4,"aMS",%progbits,1
+ 110              		.align	2
+ 111              	.LC0:
+ 112 0000 256400   		.ascii	"%d\000"
+ 113              		.section	.text.getRxBuffer,"ax",%progbits
+ 114              		.align	1
+ 115              		.global	getRxBuffer
+ 116              		.syntax unified
+ 117              		.thumb
+ 118              		.thumb_func
+ 119              		.fpu softvfp
+ 121              	getRxBuffer:
+ 122              	.LVL2:
+ 123              	.LFB70:
+  46:Src/ModbusRtu.c **** 	memset(stri, 0x00, 12);
+ 124              		.loc 1 46 1 is_stmt 1 view -0
+ 125              		.cfi_startproc
+ 126              		@ args = 0, pretend = 0, frame = 0
+ 127              		@ frame_needed = 0, uses_anonymous_args = 0
+  46:Src/ModbusRtu.c **** 	memset(stri, 0x00, 12);
+ 128              		.loc 1 46 1 is_stmt 0 view .LVU21
+ 129 0000 70B5     		push	{r4, r5, r6, lr}
+ 130              	.LCFI1:
+ 131              		.cfi_def_cfa_offset 16
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccTVdntc.s 			page 5
+
+
+ 132              		.cfi_offset 4, -16
+ 133              		.cfi_offset 5, -12
+ 134              		.cfi_offset 6, -8
+ 135              		.cfi_offset 14, -4
+ 136 0002 0446     		mov	r4, r0
+ 137 0004 0E46     		mov	r6, r1
+  47:Src/ModbusRtu.c **** 	
+ 138              		.loc 1 47 2 is_stmt 1 view .LVU22
+ 139 0006 2B4B     		ldr	r3, .L21
+ 140 0008 0022     		movs	r2, #0
+ 141 000a 1A60     		str	r2, [r3]
+ 142 000c 5A60     		str	r2, [r3, #4]
+ 143 000e 9A60     		str	r2, [r3, #8]
+  49:Src/ModbusRtu.c **** 	while(huart->RxXferCount != 0){
+ 144              		.loc 1 49 2 view .LVU23
+  49:Src/ModbusRtu.c **** 	while(huart->RxXferCount != 0){
+ 145              		.loc 1 49 29 is_stmt 0 view .LVU24
+ 146 0010 FFF7FEFF 		bl	HAL_GetTick
+ 147              	.LVL3:
+  49:Src/ModbusRtu.c **** 	while(huart->RxXferCount != 0){
+ 148              		.loc 1 49 29 view .LVU25
+ 149 0014 0546     		mov	r5, r0
+ 150              	.LVL4:
+  50:Src/ModbusRtu.c **** 		HAL_Delay(100);
+ 151              		.loc 1 50 2 is_stmt 1 view .LVU26
+ 152              	.L11:
+  50:Src/ModbusRtu.c **** 		HAL_Delay(100);
+ 153              		.loc 1 50 7 view .LVU27
+  50:Src/ModbusRtu.c **** 		HAL_Delay(100);
+ 154              		.loc 1 50 13 is_stmt 0 view .LVU28
+ 155 0016 E38D     		ldrh	r3, [r4, #46]
+ 156 0018 9BB2     		uxth	r3, r3
+  50:Src/ModbusRtu.c **** 		HAL_Delay(100);
+ 157              		.loc 1 50 7 view .LVU29
+ 158 001a 9BB1     		cbz	r3, .L18
+  51:Src/ModbusRtu.c **** 		if(HAL_GetTick() - beginTime > 1000){
+ 159              		.loc 1 51 3 is_stmt 1 view .LVU30
+ 160 001c 6420     		movs	r0, #100
+ 161 001e FFF7FEFF 		bl	HAL_Delay
+ 162              	.LVL5:
+  52:Src/ModbusRtu.c **** 			AddException('7');
+ 163              		.loc 1 52 3 view .LVU31
+  52:Src/ModbusRtu.c **** 			AddException('7');
+ 164              		.loc 1 52 6 is_stmt 0 view .LVU32
+ 165 0022 FFF7FEFF 		bl	HAL_GetTick
+ 166              	.LVL6:
+  52:Src/ModbusRtu.c **** 			AddException('7');
+ 167              		.loc 1 52 20 view .LVU33
+ 168 0026 401B     		subs	r0, r0, r5
+  52:Src/ModbusRtu.c **** 			AddException('7');
+ 169              		.loc 1 52 5 view .LVU34
+ 170 0028 B0F57A7F 		cmp	r0, #1000
+ 171 002c F3D9     		bls	.L11
+  53:Src/ModbusRtu.c **** 			strcpy(stri, "0.1");
+ 172              		.loc 1 53 4 is_stmt 1 view .LVU35
+ 173 002e 3720     		movs	r0, #55
+ 174 0030 FFF7FEFF 		bl	AddException
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccTVdntc.s 			page 6
+
+
+ 175              	.LVL7:
+  54:Src/ModbusRtu.c **** 			HAL_UART_AbortReceive(huart);
+ 176              		.loc 1 54 4 view .LVU36
+ 177 0034 1F4B     		ldr	r3, .L21
+ 178 0036 204A     		ldr	r2, .L21+4
+ 179 0038 1A60     		str	r2, [r3]
+  55:Src/ModbusRtu.c **** 			return stri;
+ 180              		.loc 1 55 4 view .LVU37
+ 181 003a 2046     		mov	r0, r4
+ 182 003c FFF7FEFF 		bl	HAL_UART_AbortReceive
+ 183              	.LVL8:
+  56:Src/ModbusRtu.c **** 		}
+ 184              		.loc 1 56 4 view .LVU38
+ 185              	.L12:
+  82:Src/ModbusRtu.c **** 
+ 186              		.loc 1 82 1 is_stmt 0 view .LVU39
+ 187 0040 1C48     		ldr	r0, .L21
+ 188 0042 70BD     		pop	{r4, r5, r6, pc}
+ 189              	.LVL9:
+ 190              	.L18:
+  60:Src/ModbusRtu.c **** 	u8BufferSize = 0;
+ 191              		.loc 1 60 2 is_stmt 1 view .LVU40
+ 192 0044 3720     		movs	r0, #55
+ 193 0046 FFF7FEFF 		bl	DelException
+ 194              	.LVL10:
+  61:Src/ModbusRtu.c **** 	get_FC3(regNum);
+ 195              		.loc 1 61 2 view .LVU41
+  61:Src/ModbusRtu.c **** 	get_FC3(regNum);
+ 196              		.loc 1 61 15 is_stmt 0 view .LVU42
+ 197 004a 1C4B     		ldr	r3, .L21+8
+ 198 004c 0022     		movs	r2, #0
+ 199 004e 1A70     		strb	r2, [r3]
+  62:Src/ModbusRtu.c **** 	
+ 200              		.loc 1 62 2 is_stmt 1 view .LVU43
+ 201 0050 3046     		mov	r0, r6
+ 202 0052 FFF7FEFF 		bl	get_FC3
+ 203              	.LVL11:
+  65:Src/ModbusRtu.c **** 		sprintf(stri, "%d", (au16regs[0]*65536+au16regs[1]));
+ 204              		.loc 1 65 2 view .LVU44
+  65:Src/ModbusRtu.c **** 		sprintf(stri, "%d", (au16regs[0]*65536+au16regs[1]));
+ 205              		.loc 1 65 4 is_stmt 0 view .LVU45
+ 206 0056 022E     		cmp	r6, #2
+ 207 0058 16D0     		beq	.L19
+  68:Src/ModbusRtu.c **** 
+ 208              		.loc 1 68 3 is_stmt 1 view .LVU46
+ 209 005a 194B     		ldr	r3, .L21+12
+ 210 005c 1A88     		ldrh	r2, [r3]
+ 211 005e 1949     		ldr	r1, .L21+16
+ 212 0060 1448     		ldr	r0, .L21
+ 213 0062 FFF7FEFF 		bl	sprintf
+ 214              	.LVL12:
+ 215              	.L15:
+  70:Src/ModbusRtu.c **** 	{
+ 216              		.loc 1 70 2 view .LVU47
+  70:Src/ModbusRtu.c **** 	{
+ 217              		.loc 1 70 9 is_stmt 0 view .LVU48
+ 218 0066 134B     		ldr	r3, .L21
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccTVdntc.s 			page 7
+
+
+ 219 0068 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+  70:Src/ModbusRtu.c **** 	{
+ 220              		.loc 1 70 4 view .LVU49
+ 221 006a 302B     		cmp	r3, #48
+ 222 006c 16D0     		beq	.L20
+ 223              	.L16:
+  74:Src/ModbusRtu.c **** 	if(striLen > 1)
+ 224              		.loc 1 74 2 is_stmt 1 view .LVU50
+  74:Src/ModbusRtu.c **** 	if(striLen > 1)
+ 225              		.loc 1 74 20 is_stmt 0 view .LVU51
+ 226 006e 1148     		ldr	r0, .L21
+ 227 0070 FFF7FEFF 		bl	strlen
+ 228              	.LVL13:
+  74:Src/ModbusRtu.c **** 	if(striLen > 1)
+ 229              		.loc 1 74 10 view .LVU52
+ 230 0074 C3B2     		uxtb	r3, r0
+ 231              	.LVL14:
+  75:Src/ModbusRtu.c **** 	{
+ 232              		.loc 1 75 2 is_stmt 1 view .LVU53
+  75:Src/ModbusRtu.c **** 	{
+ 233              		.loc 1 75 4 is_stmt 0 view .LVU54
+ 234 0076 012B     		cmp	r3, #1
+ 235 0078 E2D9     		bls	.L12
+  77:Src/ModbusRtu.c **** 		stri[striLen-1] = '.';
+ 236              		.loc 1 77 3 is_stmt 1 view .LVU55
+  77:Src/ModbusRtu.c **** 		stri[striLen-1] = '.';
+ 237              		.loc 1 77 31 is_stmt 0 view .LVU56
+ 238 007a 421E     		subs	r2, r0, #1
+  77:Src/ModbusRtu.c **** 		stri[striLen-1] = '.';
+ 239              		.loc 1 77 23 view .LVU57
+ 240 007c 0D4B     		ldr	r3, .L21
+ 241              	.LVL15:
+  77:Src/ModbusRtu.c **** 		stri[striLen-1] = '.';
+ 242              		.loc 1 77 23 view .LVU58
+ 243 007e 995C     		ldrb	r1, [r3, r2]	@ zero_extendqisi2
+  77:Src/ModbusRtu.c **** 		stri[striLen-1] = '.';
+ 244              		.loc 1 77 17 view .LVU59
+ 245 0080 1954     		strb	r1, [r3, r0]
+  78:Src/ModbusRtu.c **** 	}
+ 246              		.loc 1 78 3 is_stmt 1 view .LVU60
+  78:Src/ModbusRtu.c **** 	}
+ 247              		.loc 1 78 19 is_stmt 0 view .LVU61
+ 248 0082 2E21     		movs	r1, #46
+ 249 0084 9954     		strb	r1, [r3, r2]
+ 250 0086 DBE7     		b	.L12
+ 251              	.LVL16:
+ 252              	.L19:
+  66:Src/ModbusRtu.c **** 	else
+ 253              		.loc 1 66 3 is_stmt 1 view .LVU62
+  66:Src/ModbusRtu.c **** 	else
+ 254              		.loc 1 66 32 is_stmt 0 view .LVU63
+ 255 0088 0D4B     		ldr	r3, .L21+12
+ 256 008a 1A88     		ldrh	r2, [r3]
+  66:Src/ModbusRtu.c **** 	else
+ 257              		.loc 1 66 50 view .LVU64
+ 258 008c 5B88     		ldrh	r3, [r3, #2]
+  66:Src/ModbusRtu.c **** 	else
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccTVdntc.s 			page 8
+
+
+ 259              		.loc 1 66 3 view .LVU65
+ 260 008e 03EB0242 		add	r2, r3, r2, lsl #16
+ 261 0092 0C49     		ldr	r1, .L21+16
+ 262 0094 0748     		ldr	r0, .L21
+ 263 0096 FFF7FEFF 		bl	sprintf
+ 264              	.LVL17:
+ 265 009a E4E7     		b	.L15
+ 266              	.L20:
+  70:Src/ModbusRtu.c **** 	{
+ 267              		.loc 1 70 23 discriminator 1 view .LVU66
+ 268 009c 0548     		ldr	r0, .L21
+ 269 009e FFF7FEFF 		bl	strlen
+ 270              	.LVL18:
+ 271 00a2 0246     		mov	r2, r0
+  70:Src/ModbusRtu.c **** 	{
+ 272              		.loc 1 70 20 discriminator 1 view .LVU67
+ 273 00a4 0228     		cmp	r0, #2
+ 274 00a6 E2D9     		bls	.L16
+  72:Src/ModbusRtu.c **** 	}
+ 275              		.loc 1 72 3 is_stmt 1 view .LVU68
+ 276 00a8 0248     		ldr	r0, .L21
+ 277 00aa 411C     		adds	r1, r0, #1
+ 278 00ac FFF7FEFF 		bl	memmove
+ 279              	.LVL19:
+ 280 00b0 DDE7     		b	.L16
+ 281              	.L22:
+ 282 00b2 00BF     		.align	2
+ 283              	.L21:
+ 284 00b4 00000000 		.word	.LANCHOR0
+ 285 00b8 302E3100 		.word	3223088
+ 286 00bc 00000000 		.word	.LANCHOR1
+ 287 00c0 00000000 		.word	au16regs
+ 288 00c4 00000000 		.word	.LC0
+ 289              		.cfi_endproc
+ 290              	.LFE70:
+ 292              		.section	.text.calcCRC,"ax",%progbits
+ 293              		.align	1
+ 294              		.global	calcCRC
+ 295              		.syntax unified
+ 296              		.thumb
+ 297              		.thumb_func
+ 298              		.fpu softvfp
+ 300              	calcCRC:
+ 301              	.LVL20:
+ 302              	.LFB73:
+  96:Src/ModbusRtu.c **** 
+  97:Src/ModbusRtu.c **** void sendTxBuffer(UART_HandleTypeDef *huart, uint8_t regNum)
+  98:Src/ModbusRtu.c **** {
+  99:Src/ModbusRtu.c **** 	u8BufferSize = 6;
+ 100:Src/ModbusRtu.c **** 	uint16_t u16crc = calcCRC( u8BufferSize );
+ 101:Src/ModbusRtu.c **** 	au8Buffer[ u8BufferSize ] = u16crc >> 8;
+ 102:Src/ModbusRtu.c **** 	u8BufferSize++;
+ 103:Src/ModbusRtu.c **** 	au8Buffer[ u8BufferSize ] = u16crc & 0x00ff;
+ 104:Src/ModbusRtu.c **** 	u8BufferSize++;
+ 105:Src/ModbusRtu.c **** 
+ 106:Src/ModbusRtu.c **** 	// set RS485 transceiver to transmit mode
+ 107:Src/ModbusRtu.c **** 	HAL_GPIO_WritePin(RS485_RTS_GPIO_Port, RS485_RTS_Pin, GPIO_PIN_SET);
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccTVdntc.s 			page 9
+
+
+ 108:Src/ModbusRtu.c **** 	
+ 109:Src/ModbusRtu.c **** 	// transfer buffer to UART
+ 110:Src/ModbusRtu.c **** 	HAL_UART_Transmit(huart, au8Buffer, u8BufferSize, 0xFFFF);
+ 111:Src/ModbusRtu.c **** 
+ 112:Src/ModbusRtu.c **** 	// must wait transmission end before changing pin state
+ 113:Src/ModbusRtu.c **** 	// soft serial does not need it since it is blocking
+ 114:Src/ModbusRtu.c **** 	// ...but the implementation in SoftwareSerial does nothing
+ 115:Src/ModbusRtu.c **** 	// anyway, so no harm in calling it.
+ 116:Src/ModbusRtu.c **** 	
+ 117:Src/ModbusRtu.c **** 	// return RS485 transceiver to receive mode
+ 118:Src/ModbusRtu.c **** 	while(huart->gState != HAL_UART_STATE_READY){}
+ 119:Src/ModbusRtu.c **** 	
+ 120:Src/ModbusRtu.c **** 	HAL_GPIO_WritePin(RS485_RTS_GPIO_Port, RS485_RTS_Pin, GPIO_PIN_RESET);
+ 121:Src/ModbusRtu.c **** 	
+ 122:Src/ModbusRtu.c **** 	//Turn on UART iteraption
+ 123:Src/ModbusRtu.c **** 	if(regNum == 2)
+ 124:Src/ModbusRtu.c **** 	{
+ 125:Src/ModbusRtu.c **** 		HAL_UART_Receive_IT(huart,(uint8_t*)  au8Buffer, 9);
+ 126:Src/ModbusRtu.c **** 	}else {
+ 127:Src/ModbusRtu.c **** 		HAL_UART_Receive_IT(huart,(uint8_t*)  au8Buffer, 7);
+ 128:Src/ModbusRtu.c **** 	}
+ 129:Src/ModbusRtu.c **** }
+ 130:Src/ModbusRtu.c **** 
+ 131:Src/ModbusRtu.c **** uint16_t calcCRC(uint8_t u8length)
+ 132:Src/ModbusRtu.c **** {
+ 303              		.loc 1 132 1 view -0
+ 304              		.cfi_startproc
+ 305              		@ args = 0, pretend = 0, frame = 0
+ 306              		@ frame_needed = 0, uses_anonymous_args = 0
+ 307              		@ link register save eliminated.
+ 308              		.loc 1 132 1 is_stmt 0 view .LVU70
+ 309 0000 10B4     		push	{r4}
+ 310              	.LCFI2:
+ 311              		.cfi_def_cfa_offset 4
+ 312              		.cfi_offset 4, -4
+ 133:Src/ModbusRtu.c ****     unsigned int temp, temp2, flag;
+ 313              		.loc 1 133 5 is_stmt 1 view .LVU71
+ 134:Src/ModbusRtu.c ****     temp = 0xFFFF;
+ 314              		.loc 1 134 5 view .LVU72
+ 315              	.LVL21:
+ 135:Src/ModbusRtu.c ****     for (unsigned char i = 0; i < u8length; i++)
+ 316              		.loc 1 135 5 view .LVU73
+ 317              	.LBB2:
+ 318              		.loc 1 135 10 view .LVU74
+ 319              		.loc 1 135 24 is_stmt 0 view .LVU75
+ 320 0002 0024     		movs	r4, #0
+ 321              	.LBE2:
+ 134:Src/ModbusRtu.c ****     temp = 0xFFFF;
+ 322              		.loc 1 134 10 view .LVU76
+ 323 0004 4FF6FF73 		movw	r3, #65535
+ 324              	.LBB5:
+ 325              		.loc 1 135 5 view .LVU77
+ 326 0008 0FE0     		b	.L24
+ 327              	.LVL22:
+ 328              	.L26:
+ 329              	.LBB3:
+ 136:Src/ModbusRtu.c ****     {
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccTVdntc.s 			page 10
+
+
+ 137:Src/ModbusRtu.c ****         temp = temp ^ au8Buffer[i];
+ 138:Src/ModbusRtu.c ****         for (unsigned char j = 1; j <= 8; j++)
+ 330              		.loc 1 138 43 is_stmt 1 discriminator 2 view .LVU78
+ 331              		.loc 1 138 44 is_stmt 0 discriminator 2 view .LVU79
+ 332 000a 0132     		adds	r2, r2, #1
+ 333              	.LVL23:
+ 334              		.loc 1 138 44 discriminator 2 view .LVU80
+ 335 000c D2B2     		uxtb	r2, r2
+ 336              	.LVL24:
+ 337              	.L25:
+ 338              		.loc 1 138 35 is_stmt 1 discriminator 1 view .LVU81
+ 339              		.loc 1 138 9 is_stmt 0 discriminator 1 view .LVU82
+ 340 000e 082A     		cmp	r2, #8
+ 341 0010 09D8     		bhi	.L30
+ 139:Src/ModbusRtu.c ****         {
+ 140:Src/ModbusRtu.c ****             flag = temp & 0x0001;
+ 342              		.loc 1 140 13 is_stmt 1 view .LVU83
+ 343              		.loc 1 140 18 is_stmt 0 view .LVU84
+ 344 0012 03F00101 		and	r1, r3, #1
+ 345              	.LVL25:
+ 141:Src/ModbusRtu.c ****             temp >>=1;
+ 346              		.loc 1 141 13 is_stmt 1 view .LVU85
+ 347              		.loc 1 141 18 is_stmt 0 view .LVU86
+ 348 0016 5B08     		lsrs	r3, r3, #1
+ 349              	.LVL26:
+ 142:Src/ModbusRtu.c ****             if (flag)
+ 350              		.loc 1 142 13 is_stmt 1 view .LVU87
+ 351              		.loc 1 142 16 is_stmt 0 view .LVU88
+ 352 0018 0029     		cmp	r1, #0
+ 353 001a F6D0     		beq	.L26
+ 143:Src/ModbusRtu.c ****                 temp ^= 0xA001;
+ 354              		.loc 1 143 17 is_stmt 1 view .LVU89
+ 355              		.loc 1 143 22 is_stmt 0 view .LVU90
+ 356 001c 83F42043 		eor	r3, r3, #40960
+ 357              	.LVL27:
+ 358              		.loc 1 143 22 view .LVU91
+ 359 0020 83F00103 		eor	r3, r3, #1
+ 360              	.LVL28:
+ 361              		.loc 1 143 22 view .LVU92
+ 362 0024 F1E7     		b	.L26
+ 363              	.LVL29:
+ 364              	.L30:
+ 365              		.loc 1 143 22 view .LVU93
+ 366              	.LBE3:
+ 135:Src/ModbusRtu.c ****     {
+ 367              		.loc 1 135 45 is_stmt 1 discriminator 2 view .LVU94
+ 135:Src/ModbusRtu.c ****     {
+ 368              		.loc 1 135 46 is_stmt 0 discriminator 2 view .LVU95
+ 369 0026 0134     		adds	r4, r4, #1
+ 370              	.LVL30:
+ 135:Src/ModbusRtu.c ****     {
+ 371              		.loc 1 135 46 discriminator 2 view .LVU96
+ 372 0028 E4B2     		uxtb	r4, r4
+ 373              	.LVL31:
+ 374              	.L24:
+ 135:Src/ModbusRtu.c ****     {
+ 375              		.loc 1 135 31 is_stmt 1 discriminator 1 view .LVU97
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccTVdntc.s 			page 11
+
+
+ 135:Src/ModbusRtu.c ****     {
+ 376              		.loc 1 135 5 is_stmt 0 discriminator 1 view .LVU98
+ 377 002a 8442     		cmp	r4, r0
+ 378 002c 04D2     		bcs	.L31
+ 137:Src/ModbusRtu.c ****         for (unsigned char j = 1; j <= 8; j++)
+ 379              		.loc 1 137 9 is_stmt 1 view .LVU99
+ 137:Src/ModbusRtu.c ****         for (unsigned char j = 1; j <= 8; j++)
+ 380              		.loc 1 137 32 is_stmt 0 view .LVU100
+ 381 002e 054A     		ldr	r2, .L32
+ 382 0030 125D     		ldrb	r2, [r2, r4]	@ zero_extendqisi2
+ 137:Src/ModbusRtu.c ****         for (unsigned char j = 1; j <= 8; j++)
+ 383              		.loc 1 137 14 view .LVU101
+ 384 0032 5340     		eors	r3, r3, r2
+ 385              	.LVL32:
+ 138:Src/ModbusRtu.c ****         {
+ 386              		.loc 1 138 9 is_stmt 1 view .LVU102
+ 387              	.LBB4:
+ 138:Src/ModbusRtu.c ****         {
+ 388              		.loc 1 138 14 view .LVU103
+ 138:Src/ModbusRtu.c ****         {
+ 389              		.loc 1 138 28 is_stmt 0 view .LVU104
+ 390 0034 0122     		movs	r2, #1
+ 138:Src/ModbusRtu.c ****         {
+ 391              		.loc 1 138 9 view .LVU105
+ 392 0036 EAE7     		b	.L25
+ 393              	.LVL33:
+ 394              	.L31:
+ 138:Src/ModbusRtu.c ****         {
+ 395              		.loc 1 138 9 view .LVU106
+ 396              	.LBE4:
+ 397              	.LBE5:
+ 144:Src/ModbusRtu.c ****         }
+ 145:Src/ModbusRtu.c ****     }
+ 146:Src/ModbusRtu.c ****     // Reverse byte order.
+ 147:Src/ModbusRtu.c ****     temp2 = temp >> 8;
+ 398              		.loc 1 147 5 is_stmt 1 view .LVU107
+ 148:Src/ModbusRtu.c ****     temp = (temp << 8) | temp2;
+ 399              		.loc 1 148 5 view .LVU108
+ 400              		.loc 1 148 18 is_stmt 0 view .LVU109
+ 401 0038 1A02     		lsls	r2, r3, #8
+ 402              		.loc 1 148 10 view .LVU110
+ 403 003a 42EA1323 		orr	r3, r2, r3, lsr #8
+ 404              	.LVL34:
+ 149:Src/ModbusRtu.c ****     temp &= 0xFFFF;
+ 405              		.loc 1 149 5 is_stmt 1 view .LVU111
+ 150:Src/ModbusRtu.c ****     // the returned value is already swapped
+ 151:Src/ModbusRtu.c ****     // crcLo byte is first & crcHi byte is last
+ 152:Src/ModbusRtu.c ****     return temp;
+ 406              		.loc 1 152 5 view .LVU112
+ 153:Src/ModbusRtu.c **** }
+ 407              		.loc 1 153 1 is_stmt 0 view .LVU113
+ 408 003e 98B2     		uxth	r0, r3
+ 409              	.LVL35:
+ 410              		.loc 1 153 1 view .LVU114
+ 411 0040 10BC     		pop	{r4}
+ 412              	.LCFI3:
+ 413              		.cfi_restore 4
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccTVdntc.s 			page 12
+
+
+ 414              		.cfi_def_cfa_offset 0
+ 415              	.LVL36:
+ 416              		.loc 1 153 1 view .LVU115
+ 417 0042 7047     		bx	lr
+ 418              	.L33:
+ 419              		.align	2
+ 420              	.L32:
+ 421 0044 00000000 		.word	au8Buffer
+ 422              		.cfi_endproc
+ 423              	.LFE73:
+ 425              		.section	.text.sendTxBuffer,"ax",%progbits
+ 426              		.align	1
+ 427              		.global	sendTxBuffer
+ 428              		.syntax unified
+ 429              		.thumb
+ 430              		.thumb_func
+ 431              		.fpu softvfp
+ 433              	sendTxBuffer:
+ 434              	.LVL37:
+ 435              	.LFB72:
+  98:Src/ModbusRtu.c **** 	u8BufferSize = 6;
+ 436              		.loc 1 98 1 is_stmt 1 view -0
+ 437              		.cfi_startproc
+ 438              		@ args = 0, pretend = 0, frame = 0
+ 439              		@ frame_needed = 0, uses_anonymous_args = 0
+  98:Src/ModbusRtu.c **** 	u8BufferSize = 6;
+ 440              		.loc 1 98 1 is_stmt 0 view .LVU117
+ 441 0000 F8B5     		push	{r3, r4, r5, r6, r7, lr}
+ 442              	.LCFI4:
+ 443              		.cfi_def_cfa_offset 24
+ 444              		.cfi_offset 3, -24
+ 445              		.cfi_offset 4, -20
+ 446              		.cfi_offset 5, -16
+ 447              		.cfi_offset 6, -12
+ 448              		.cfi_offset 7, -8
+ 449              		.cfi_offset 14, -4
+ 450 0002 0446     		mov	r4, r0
+ 451 0004 0D46     		mov	r5, r1
+  99:Src/ModbusRtu.c **** 	uint16_t u16crc = calcCRC( u8BufferSize );
+ 452              		.loc 1 99 2 is_stmt 1 view .LVU118
+  99:Src/ModbusRtu.c **** 	uint16_t u16crc = calcCRC( u8BufferSize );
+ 453              		.loc 1 99 15 is_stmt 0 view .LVU119
+ 454 0006 184F     		ldr	r7, .L40
+ 455 0008 0620     		movs	r0, #6
+ 456              	.LVL38:
+  99:Src/ModbusRtu.c **** 	uint16_t u16crc = calcCRC( u8BufferSize );
+ 457              		.loc 1 99 15 view .LVU120
+ 458 000a 3870     		strb	r0, [r7]
+ 100:Src/ModbusRtu.c **** 	au8Buffer[ u8BufferSize ] = u16crc >> 8;
+ 459              		.loc 1 100 2 is_stmt 1 view .LVU121
+ 100:Src/ModbusRtu.c **** 	au8Buffer[ u8BufferSize ] = u16crc >> 8;
+ 460              		.loc 1 100 20 is_stmt 0 view .LVU122
+ 461 000c FFF7FEFF 		bl	calcCRC
+ 462              	.LVL39:
+ 101:Src/ModbusRtu.c **** 	u8BufferSize++;
+ 463              		.loc 1 101 2 is_stmt 1 view .LVU123
+ 101:Src/ModbusRtu.c **** 	u8BufferSize++;
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccTVdntc.s 			page 13
+
+
+ 464              		.loc 1 101 28 is_stmt 0 view .LVU124
+ 465 0010 164E     		ldr	r6, .L40+4
+ 466 0012 030A     		lsrs	r3, r0, #8
+ 467 0014 B371     		strb	r3, [r6, #6]
+ 102:Src/ModbusRtu.c **** 	au8Buffer[ u8BufferSize ] = u16crc & 0x00ff;
+ 468              		.loc 1 102 2 is_stmt 1 view .LVU125
+ 103:Src/ModbusRtu.c **** 	u8BufferSize++;
+ 469              		.loc 1 103 2 view .LVU126
+ 103:Src/ModbusRtu.c **** 	u8BufferSize++;
+ 470              		.loc 1 103 28 is_stmt 0 view .LVU127
+ 471 0016 F071     		strb	r0, [r6, #7]
+ 104:Src/ModbusRtu.c **** 
+ 472              		.loc 1 104 2 is_stmt 1 view .LVU128
+ 104:Src/ModbusRtu.c **** 
+ 473              		.loc 1 104 14 is_stmt 0 view .LVU129
+ 474 0018 0823     		movs	r3, #8
+ 475 001a 3B70     		strb	r3, [r7]
+ 107:Src/ModbusRtu.c **** 	
+ 476              		.loc 1 107 2 is_stmt 1 view .LVU130
+ 477 001c 0122     		movs	r2, #1
+ 478 001e 4FF48071 		mov	r1, #256
+ 479 0022 1348     		ldr	r0, .L40+8
+ 480              	.LVL40:
+ 107:Src/ModbusRtu.c **** 	
+ 481              		.loc 1 107 2 is_stmt 0 view .LVU131
+ 482 0024 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 483              	.LVL41:
+ 110:Src/ModbusRtu.c **** 
+ 484              		.loc 1 110 2 is_stmt 1 view .LVU132
+ 485 0028 4FF6FF73 		movw	r3, #65535
+ 486 002c 3A78     		ldrb	r2, [r7]	@ zero_extendqisi2
+ 487 002e 3146     		mov	r1, r6
+ 488 0030 2046     		mov	r0, r4
+ 489 0032 FFF7FEFF 		bl	HAL_UART_Transmit
+ 490              	.LVL42:
+ 118:Src/ModbusRtu.c **** 	
+ 491              		.loc 1 118 2 view .LVU133
+ 492              	.L35:
+ 118:Src/ModbusRtu.c **** 	
+ 493              		.loc 1 118 47 discriminator 1 view .LVU134
+ 118:Src/ModbusRtu.c **** 	
+ 494              		.loc 1 118 7 discriminator 1 view .LVU135
+ 118:Src/ModbusRtu.c **** 	
+ 495              		.loc 1 118 13 is_stmt 0 discriminator 1 view .LVU136
+ 496 0036 94F83930 		ldrb	r3, [r4, #57]	@ zero_extendqisi2
+ 497 003a DBB2     		uxtb	r3, r3
+ 118:Src/ModbusRtu.c **** 	
+ 498              		.loc 1 118 7 discriminator 1 view .LVU137
+ 499 003c 202B     		cmp	r3, #32
+ 500 003e FAD1     		bne	.L35
+ 120:Src/ModbusRtu.c **** 	
+ 501              		.loc 1 120 2 is_stmt 1 view .LVU138
+ 502 0040 0022     		movs	r2, #0
+ 503 0042 4FF48071 		mov	r1, #256
+ 504 0046 0A48     		ldr	r0, .L40+8
+ 505 0048 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 506              	.LVL43:
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccTVdntc.s 			page 14
+
+
+ 123:Src/ModbusRtu.c **** 	{
+ 507              		.loc 1 123 2 view .LVU139
+ 123:Src/ModbusRtu.c **** 	{
+ 508              		.loc 1 123 4 is_stmt 0 view .LVU140
+ 509 004c 022D     		cmp	r5, #2
+ 510 004e 05D0     		beq	.L39
+ 127:Src/ModbusRtu.c **** 	}
+ 511              		.loc 1 127 3 is_stmt 1 view .LVU141
+ 512 0050 0722     		movs	r2, #7
+ 513 0052 0649     		ldr	r1, .L40+4
+ 514 0054 2046     		mov	r0, r4
+ 515 0056 FFF7FEFF 		bl	HAL_UART_Receive_IT
+ 516              	.LVL44:
+ 517              	.L34:
+ 129:Src/ModbusRtu.c **** 
+ 518              		.loc 1 129 1 is_stmt 0 view .LVU142
+ 519 005a F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+ 520              	.LVL45:
+ 521              	.L39:
+ 125:Src/ModbusRtu.c **** 	}else {
+ 522              		.loc 1 125 3 is_stmt 1 view .LVU143
+ 523 005c 0922     		movs	r2, #9
+ 524 005e 0349     		ldr	r1, .L40+4
+ 525 0060 2046     		mov	r0, r4
+ 526 0062 FFF7FEFF 		bl	HAL_UART_Receive_IT
+ 527              	.LVL46:
+ 528 0066 F8E7     		b	.L34
+ 529              	.L41:
+ 530              		.align	2
+ 531              	.L40:
+ 532 0068 00000000 		.word	.LANCHOR1
+ 533 006c 00000000 		.word	au8Buffer
+ 534 0070 00080140 		.word	1073809408
+ 535              		.cfi_endproc
+ 536              	.LFE72:
+ 538              		.section	.text.MBGetQuery,"ax",%progbits
+ 539              		.align	1
+ 540              		.global	MBGetQuery
+ 541              		.syntax unified
+ 542              		.thumb
+ 543              		.thumb_func
+ 544              		.fpu softvfp
+ 546              	MBGetQuery:
+ 547              	.LVL47:
+ 548              	.LFB69:
+  33:Src/ModbusRtu.c **** 	au8Buffer[ID] = 1;
+ 549              		.loc 1 33 1 view -0
+ 550              		.cfi_startproc
+ 551              		@ args = 0, pretend = 0, frame = 0
+ 552              		@ frame_needed = 0, uses_anonymous_args = 0
+  33:Src/ModbusRtu.c **** 	au8Buffer[ID] = 1;
+ 553              		.loc 1 33 1 is_stmt 0 view .LVU145
+ 554 0000 38B5     		push	{r3, r4, r5, lr}
+ 555              	.LCFI5:
+ 556              		.cfi_def_cfa_offset 16
+ 557              		.cfi_offset 3, -16
+ 558              		.cfi_offset 4, -12
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccTVdntc.s 			page 15
+
+
+ 559              		.cfi_offset 5, -8
+ 560              		.cfi_offset 14, -4
+ 561 0002 0546     		mov	r5, r0
+  34:Src/ModbusRtu.c **** 	au8Buffer[ FUNC ] = 3;
+ 562              		.loc 1 34 2 is_stmt 1 view .LVU146
+  34:Src/ModbusRtu.c **** 	au8Buffer[ FUNC ] = 3;
+ 563              		.loc 1 34 16 is_stmt 0 view .LVU147
+ 564 0004 094B     		ldr	r3, .L44
+ 565 0006 0124     		movs	r4, #1
+ 566 0008 1C70     		strb	r4, [r3]
+  35:Src/ModbusRtu.c **** 	au8Buffer[ ADD_HI ] = highByte(regAdress);
+ 567              		.loc 1 35 2 is_stmt 1 view .LVU148
+  35:Src/ModbusRtu.c **** 	au8Buffer[ ADD_HI ] = highByte(regAdress);
+ 568              		.loc 1 35 20 is_stmt 0 view .LVU149
+ 569 000a 0324     		movs	r4, #3
+ 570 000c 5C70     		strb	r4, [r3, #1]
+  36:Src/ModbusRtu.c **** 	au8Buffer[ ADD_LO ] = lowByte(regAdress);
+ 571              		.loc 1 36 2 is_stmt 1 view .LVU150
+  36:Src/ModbusRtu.c **** 	au8Buffer[ ADD_LO ] = lowByte(regAdress);
+ 572              		.loc 1 36 24 is_stmt 0 view .LVU151
+ 573 000e 0C0A     		lsrs	r4, r1, #8
+  36:Src/ModbusRtu.c **** 	au8Buffer[ ADD_LO ] = lowByte(regAdress);
+ 574              		.loc 1 36 22 view .LVU152
+ 575 0010 9C70     		strb	r4, [r3, #2]
+  37:Src/ModbusRtu.c **** 	au8Buffer[ NB_HI ] = highByte(regNum);
+ 576              		.loc 1 37 2 is_stmt 1 view .LVU153
+  37:Src/ModbusRtu.c **** 	au8Buffer[ NB_HI ] = highByte(regNum);
+ 577              		.loc 1 37 22 is_stmt 0 view .LVU154
+ 578 0012 D970     		strb	r1, [r3, #3]
+  38:Src/ModbusRtu.c **** 	au8Buffer[ NB_LO ] = lowByte(regNum);
+ 579              		.loc 1 38 2 is_stmt 1 view .LVU155
+  38:Src/ModbusRtu.c **** 	au8Buffer[ NB_LO ] = lowByte(regNum);
+ 580              		.loc 1 38 23 is_stmt 0 view .LVU156
+ 581 0014 110A     		lsrs	r1, r2, #8
+ 582              	.LVL48:
+  38:Src/ModbusRtu.c **** 	au8Buffer[ NB_LO ] = lowByte(regNum);
+ 583              		.loc 1 38 21 view .LVU157
+ 584 0016 1971     		strb	r1, [r3, #4]
+  39:Src/ModbusRtu.c **** 	sendTxBuffer(huart, regNum);
+ 585              		.loc 1 39 2 is_stmt 1 view .LVU158
+  39:Src/ModbusRtu.c **** 	sendTxBuffer(huart, regNum);
+ 586              		.loc 1 39 23 is_stmt 0 view .LVU159
+ 587 0018 D4B2     		uxtb	r4, r2
+  39:Src/ModbusRtu.c **** 	sendTxBuffer(huart, regNum);
+ 588              		.loc 1 39 21 view .LVU160
+ 589 001a 5C71     		strb	r4, [r3, #5]
+  40:Src/ModbusRtu.c **** 
+ 590              		.loc 1 40 2 is_stmt 1 view .LVU161
+ 591 001c 2146     		mov	r1, r4
+ 592 001e FFF7FEFF 		bl	sendTxBuffer
+ 593              	.LVL49:
+  42:Src/ModbusRtu.c **** }
+ 594              		.loc 1 42 2 view .LVU162
+  42:Src/ModbusRtu.c **** }
+ 595              		.loc 1 42 9 is_stmt 0 view .LVU163
+ 596 0022 2146     		mov	r1, r4
+ 597 0024 2846     		mov	r0, r5
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccTVdntc.s 			page 16
+
+
+ 598 0026 FFF7FEFF 		bl	getRxBuffer
+ 599              	.LVL50:
+  43:Src/ModbusRtu.c **** 
+ 600              		.loc 1 43 1 view .LVU164
+ 601 002a 38BD     		pop	{r3, r4, r5, pc}
+ 602              	.LVL51:
+ 603              	.L45:
+  43:Src/ModbusRtu.c **** 
+ 604              		.loc 1 43 1 view .LVU165
+ 605              		.align	2
+ 606              	.L44:
+ 607 002c 00000000 		.word	au8Buffer
+ 608              		.cfi_endproc
+ 609              	.LFE69:
+ 611              		.global	stri
+ 612              		.comm	au8Buffer,64,4
+ 613              		.comm	au16regs,32,4
+ 614              		.global	u16errCnt
+ 615              		.comm	u16OutCnt,2,2
+ 616              		.comm	u16InCnt,2,2
+ 617              		.global	u8BufferSize
+ 618              		.global	u8id
+ 619              		.section	.bss.stri,"aw",%nobits
+ 620              		.align	2
+ 621              		.set	.LANCHOR0,. + 0
+ 624              	stri:
+ 625 0000 00000000 		.space	12
+ 625      00000000 
+ 625      00000000 
+ 626              		.section	.bss.u16errCnt,"aw",%nobits
+ 627              		.align	1
+ 630              	u16errCnt:
+ 631 0000 0000     		.space	2
+ 632              		.section	.bss.u8id,"aw",%nobits
+ 635              	u8id:
+ 636 0000 00       		.space	1
+ 637              		.section	.data.u8BufferSize,"aw"
+ 638              		.set	.LANCHOR1,. + 0
+ 641              	u8BufferSize:
+ 642 0000 06       		.byte	6
+ 643              		.text
+ 644              	.Letext0:
+ 645              		.file 2 "c:\\users\\user\\.vscode\\extensions\\buzzyelectronics.stm-helper-1.2.9\\armgcc\\arm-none
+ 646              		.file 3 "c:\\users\\user\\.vscode\\extensions\\buzzyelectronics.stm-helper-1.2.9\\armgcc\\arm-none
+ 647              		.file 4 "Drivers/CMSIS/Include/core_cm3.h"
+ 648              		.file 5 "Drivers/CMSIS/Device/ST/STM32F1xx/Include/system_stm32f1xx.h"
+ 649              		.file 6 "Drivers/CMSIS/Device/ST/STM32F1xx/Include/stm32f103xb.h"
+ 650              		.file 7 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_def.h"
+ 651              		.file 8 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_gpio.h"
+ 652              		.file 9 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_dma.h"
+ 653              		.file 10 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h"
+ 654              		.file 11 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h"
+ 655              		.file 12 "c:\\users\\user\\.vscode\\extensions\\buzzyelectronics.stm-helper-1.2.9\\armgcc\\arm-non
+ 656              		.file 13 "c:\\users\\user\\.vscode\\extensions\\buzzyelectronics.stm-helper-1.2.9\\armgcc\\arm-non
+ 657              		.file 14 "c:\\users\\user\\.vscode\\extensions\\buzzyelectronics.stm-helper-1.2.9\\armgcc\\lib\\gc
+ 658              		.file 15 "c:\\users\\user\\.vscode\\extensions\\buzzyelectronics.stm-helper-1.2.9\\armgcc\\arm-non
+ 659              		.file 16 "c:\\users\\user\\.vscode\\extensions\\buzzyelectronics.stm-helper-1.2.9\\armgcc\\arm-non
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccTVdntc.s 			page 17
+
+
+ 660              		.file 17 "Inc/main.h"
+ 661              		.file 18 "c:\\users\\user\\.vscode\\extensions\\buzzyelectronics.stm-helper-1.2.9\\armgcc\\arm-non
+ 662              		.file 19 "c:\\users\\user\\.vscode\\extensions\\buzzyelectronics.stm-helper-1.2.9\\armgcc\\arm-non
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccTVdntc.s 			page 18
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 ModbusRtu.c
+C:\Users\User\AppData\Local\Temp\ccTVdntc.s:16     .text.StartMB:0000000000000000 $t
+C:\Users\User\AppData\Local\Temp\ccTVdntc.s:24     .text.StartMB:0000000000000000 StartMB
+C:\Users\User\AppData\Local\Temp\ccTVdntc.s:47     .text.StartMB:0000000000000010 $d
+C:\Users\User\AppData\Local\Temp\ccTVdntc.s:52     .text.get_FC3:0000000000000000 $t
+C:\Users\User\AppData\Local\Temp\ccTVdntc.s:59     .text.get_FC3:0000000000000000 get_FC3
+C:\Users\User\AppData\Local\Temp\ccTVdntc.s:104    .text.get_FC3:0000000000000024 $d
+                            *COM*:0000000000000040 au8Buffer
+                            *COM*:0000000000000020 au16regs
+C:\Users\User\AppData\Local\Temp\ccTVdntc.s:110    .rodata.getRxBuffer.str1.4:0000000000000000 $d
+C:\Users\User\AppData\Local\Temp\ccTVdntc.s:114    .text.getRxBuffer:0000000000000000 $t
+C:\Users\User\AppData\Local\Temp\ccTVdntc.s:121    .text.getRxBuffer:0000000000000000 getRxBuffer
+C:\Users\User\AppData\Local\Temp\ccTVdntc.s:284    .text.getRxBuffer:00000000000000b4 $d
+C:\Users\User\AppData\Local\Temp\ccTVdntc.s:293    .text.calcCRC:0000000000000000 $t
+C:\Users\User\AppData\Local\Temp\ccTVdntc.s:300    .text.calcCRC:0000000000000000 calcCRC
+C:\Users\User\AppData\Local\Temp\ccTVdntc.s:421    .text.calcCRC:0000000000000044 $d
+C:\Users\User\AppData\Local\Temp\ccTVdntc.s:426    .text.sendTxBuffer:0000000000000000 $t
+C:\Users\User\AppData\Local\Temp\ccTVdntc.s:433    .text.sendTxBuffer:0000000000000000 sendTxBuffer
+C:\Users\User\AppData\Local\Temp\ccTVdntc.s:532    .text.sendTxBuffer:0000000000000068 $d
+C:\Users\User\AppData\Local\Temp\ccTVdntc.s:539    .text.MBGetQuery:0000000000000000 $t
+C:\Users\User\AppData\Local\Temp\ccTVdntc.s:546    .text.MBGetQuery:0000000000000000 MBGetQuery
+C:\Users\User\AppData\Local\Temp\ccTVdntc.s:607    .text.MBGetQuery:000000000000002c $d
+C:\Users\User\AppData\Local\Temp\ccTVdntc.s:624    .bss.stri:0000000000000000 stri
+C:\Users\User\AppData\Local\Temp\ccTVdntc.s:630    .bss.u16errCnt:0000000000000000 u16errCnt
+                            *COM*:0000000000000002 u16OutCnt
+                            *COM*:0000000000000002 u16InCnt
+C:\Users\User\AppData\Local\Temp\ccTVdntc.s:641    .data.u8BufferSize:0000000000000000 u8BufferSize
+C:\Users\User\AppData\Local\Temp\ccTVdntc.s:635    .bss.u8id:0000000000000000 u8id
+C:\Users\User\AppData\Local\Temp\ccTVdntc.s:620    .bss.stri:0000000000000000 $d
+C:\Users\User\AppData\Local\Temp\ccTVdntc.s:627    .bss.u16errCnt:0000000000000000 $d
+C:\Users\User\AppData\Local\Temp\ccTVdntc.s:636    .bss.u8id:0000000000000000 $d
+
+UNDEFINED SYMBOLS
+HAL_GPIO_WritePin
+HAL_GetTick
+HAL_Delay
+AddException
+HAL_UART_AbortReceive
+DelException
+sprintf
+strlen
+memmove
+HAL_UART_Transmit
+HAL_UART_Receive_IT
