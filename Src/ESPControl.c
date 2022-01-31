@@ -6,7 +6,6 @@ void TxESP(UART_HandleTypeDef *huart, char *command, char *pData, uint16_t Size)
 	uint8_t cmdSize = strlen(command); 
 
 	for(uint8_t i = 0; i<2; i++) {
-		HAL_Delay(1000);
 		HAL_UART_Transmit(huart, (uint8_t*)command, (uint16_t)cmdSize, 0xFFFF);
 		RxESP(huart, 1, pData, Size);
 		if(strcmp(pData, "No response") == 0)
@@ -18,6 +17,12 @@ void TxESP(UART_HandleTypeDef *huart, char *command, char *pData, uint16_t Size)
 
 void RxESP(UART_HandleTypeDef *huart, uint8_t resetOnExept, char *pData, uint16_t Size)
 {
+	char *tempBuff = calloc(500, sizeof(char));
+	HAL_UART_Receive_IT(huart,(uint8_t*) tempBuff, 500);
+	HAL_Delay(1);
+	HAL_UART_AbortReceive_IT(huart);
+	free(tempBuff);
+
 	//while(huart->RxState != HAL_UART_STATE_READY){}
 	HAL_UART_Receive_IT(huart, (uint8_t *) pData, Size);
 
@@ -79,11 +84,11 @@ void ResetESP(UART_HandleTypeDef *huart)
 	HAL_Delay(5);
 	HAL_GPIO_WritePin(ESP_Reset_GPIO_Port, ESP_Reset_Pin, GPIO_PIN_SET);
 	// Clearing uart from trash
-	char *tempBuff = calloc(500, sizeof(char));
-	HAL_UART_Receive_IT(huart,(uint8_t*) tempBuff, 500);
-	HAL_Delay(500);
-	HAL_UART_AbortReceive_IT(huart);
-	free(tempBuff);
+	// char *tempBuff = calloc(500, sizeof(char));
+	// HAL_UART_Receive_IT(huart,(uint8_t*) tempBuff, 500);
+	// HAL_Delay(500);
+	// HAL_UART_AbortReceive_IT(huart);
+	// free(tempBuff);
 	// Internet connection check
 	char responseRx[15] = {0};
 	RxESP(huart, 0, responseRx, 15);

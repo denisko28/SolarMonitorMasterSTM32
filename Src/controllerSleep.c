@@ -48,7 +48,8 @@ void sleepEnd(RTC_HandleTypeDef *hrtc, RTC_TimeTypeDef *realTime, UART_HandleTyp
     DelAllExceptions();
     LoadingScreen();
     HAL_RTC_GetTime(hrtc, realTime, RTC_FORMAT_BIN);
-    WakeupESP(hrtc, realTime, ESPhuart);
+    InitRealTime(ESPhuart, hrtc, realTime);
+    //WakeupESP(hrtc, realTime, ESPhuart);
 
     sprintf(mess, "%u:%u", realTime->Hours, realTime->Minutes);
     HAL_UART_Transmit(TestHuart, (uint8_t *) mess, 10, 0xFFFF);
@@ -61,7 +62,7 @@ void sleepEnd(RTC_HandleTypeDef *hrtc, RTC_TimeTypeDef *realTime, UART_HandleTyp
 void sleepBegin(RTC_HandleTypeDef *hrtc, RTC_TimeTypeDef *realTime, UART_HandleTypeDef *ESPhuart, uint8_t *selectedElemIndex, uint8_t *scrollCount,
     uint8_t *buttonIsPressed, uint32_t *lastInteractionTime, UART_HandleTypeDef *TestHuart) {
     setAlarm(hrtc, realTime);
-    SleepESP(ESPhuart);
+    //SleepESP(ESPhuart);
     char mess[15] = "Goes to sleep";
     HAL_UART_Transmit(TestHuart, (uint8_t *) mess,15,0xFFFF);
     //HAL_GPIO_WritePin(GPIOA, GoesToSleep_Pin, GPIO_PIN_RESET);

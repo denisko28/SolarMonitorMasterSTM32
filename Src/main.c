@@ -144,7 +144,7 @@ int main(void)
 
   // Set up timer for Encoder  
 	HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_2);
-	HAL_Delay(500);
+	HAL_Delay(1000);
 
   // Initialize lcd display  
 	lcd_init();
@@ -421,8 +421,8 @@ static void MX_RTC_Init(void)
 
   /** Initialize RTC and set the Time and Date 
   */
-  sTime.Hours = 15;
-  sTime.Minutes = 38;
+  sTime.Hours = 4;
+  sTime.Minutes = 55;
   sTime.Seconds = 0;
 
   if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BIN) != HAL_OK)
@@ -716,12 +716,12 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(ESP_Wakeup_GPIO_Port, ESP_Wakeup_Pin, GPIO_PIN_SET);
 
-  /*Configure GPIO pins : Buzzer_Pin RS485_RTS_Pin */
-  GPIO_InitStruct.Pin = Buzzer_Pin|RS485_RTS_Pin;
+  /*Configure GPIO pin : Buzzer_Pin */
+  GPIO_InitStruct.Pin = Buzzer_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+  HAL_GPIO_Init(Buzzer_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : ESP_Reset_Pin */
   GPIO_InitStruct.Pin = ESP_Reset_Pin;
@@ -730,10 +730,17 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(ESP_Reset_GPIO_Port, &GPIO_InitStruct);
 
+  /*Configure GPIO pin : RS485_RTS_Pin */
+  GPIO_InitStruct.Pin = RS485_RTS_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(RS485_RTS_GPIO_Port, &GPIO_InitStruct);
+
   /*Configure GPIO pins : PB3 PB4 */
   GPIO_InitStruct.Pin = GPIO_PIN_3|GPIO_PIN_4;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /*Configure GPIO pin : ESP_Wakeup_Pin */

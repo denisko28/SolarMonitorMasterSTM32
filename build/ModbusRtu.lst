@@ -1,4 +1,4 @@
-ARM GAS  C:\Users\User\AppData\Local\Temp\ccTVdntc.s 			page 1
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccS06Y7L.s 			page 1
 
 
    1              		.cpu cortex-m3
@@ -58,7 +58,7 @@ ARM GAS  C:\Users\User\AppData\Local\Temp\ccTVdntc.s 			page 1
   29              		@ args = 0, pretend = 0, frame = 0
   30              		@ frame_needed = 0, uses_anonymous_args = 0
   31 0000 08B5     		push	{r3, lr}
-ARM GAS  C:\Users\User\AppData\Local\Temp\ccTVdntc.s 			page 2
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccS06Y7L.s 			page 2
 
 
   32              	.LCFI0:
@@ -118,7 +118,7 @@ ARM GAS  C:\Users\User\AppData\Local\Temp\ccTVdntc.s 			page 1
   54:Src/ModbusRtu.c **** 			strcpy(stri, "0.1");
   55:Src/ModbusRtu.c **** 			HAL_UART_AbortReceive(huart);
   56:Src/ModbusRtu.c **** 			return stri;
-ARM GAS  C:\Users\User\AppData\Local\Temp\ccTVdntc.s 			page 3
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccS06Y7L.s 			page 3
 
 
   57:Src/ModbusRtu.c **** 		}
@@ -178,7 +178,7 @@ ARM GAS  C:\Users\User\AppData\Local\Temp\ccTVdntc.s 			page 1
   81              		.loc 1 91 4 is_stmt 0 view .LVU12
   82 000e 0228     		cmp	r0, #2
   83 0010 00D0     		beq	.L7
-ARM GAS  C:\Users\User\AppData\Local\Temp\ccTVdntc.s 			page 4
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccS06Y7L.s 			page 4
 
 
   84              	.L5:
@@ -238,7 +238,7 @@ ARM GAS  C:\Users\User\AppData\Local\Temp\ccTVdntc.s 			page 1
  129 0000 70B5     		push	{r4, r5, r6, lr}
  130              	.LCFI1:
  131              		.cfi_def_cfa_offset 16
-ARM GAS  C:\Users\User\AppData\Local\Temp\ccTVdntc.s 			page 5
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccS06Y7L.s 			page 5
 
 
  132              		.cfi_offset 4, -16
@@ -298,7 +298,7 @@ ARM GAS  C:\Users\User\AppData\Local\Temp\ccTVdntc.s 			page 1
  172              		.loc 1 53 4 is_stmt 1 view .LVU35
  173 002e 3720     		movs	r0, #55
  174 0030 FFF7FEFF 		bl	AddException
-ARM GAS  C:\Users\User\AppData\Local\Temp\ccTVdntc.s 			page 6
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccS06Y7L.s 			page 6
 
 
  175              	.LVL7:
@@ -358,7 +358,7 @@ ARM GAS  C:\Users\User\AppData\Local\Temp\ccTVdntc.s 			page 1
   70:Src/ModbusRtu.c **** 	{
  217              		.loc 1 70 9 is_stmt 0 view .LVU48
  218 0066 134B     		ldr	r3, .L21
-ARM GAS  C:\Users\User\AppData\Local\Temp\ccTVdntc.s 			page 7
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccS06Y7L.s 			page 7
 
 
  219 0068 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
@@ -418,7 +418,7 @@ ARM GAS  C:\Users\User\AppData\Local\Temp\ccTVdntc.s 			page 1
  257              		.loc 1 66 50 view .LVU64
  258 008c 5B88     		ldrh	r3, [r3, #2]
   66:Src/ModbusRtu.c **** 	else
-ARM GAS  C:\Users\User\AppData\Local\Temp\ccTVdntc.s 			page 8
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccS06Y7L.s 			page 8
 
 
  259              		.loc 1 66 3 view .LVU65
@@ -478,7 +478,7 @@ ARM GAS  C:\Users\User\AppData\Local\Temp\ccTVdntc.s 			page 1
  105:Src/ModbusRtu.c **** 
  106:Src/ModbusRtu.c **** 	// set RS485 transceiver to transmit mode
  107:Src/ModbusRtu.c **** 	HAL_GPIO_WritePin(RS485_RTS_GPIO_Port, RS485_RTS_Pin, GPIO_PIN_SET);
-ARM GAS  C:\Users\User\AppData\Local\Temp\ccTVdntc.s 			page 9
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccS06Y7L.s 			page 9
 
 
  108:Src/ModbusRtu.c **** 	
@@ -538,7 +538,7 @@ ARM GAS  C:\Users\User\AppData\Local\Temp\ccTVdntc.s 			page 1
  328              	.L26:
  329              	.LBB3:
  136:Src/ModbusRtu.c ****     {
-ARM GAS  C:\Users\User\AppData\Local\Temp\ccTVdntc.s 			page 10
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccS06Y7L.s 			page 10
 
 
  137:Src/ModbusRtu.c ****         temp = temp ^ au8Buffer[i];
@@ -598,7 +598,7 @@ ARM GAS  C:\Users\User\AppData\Local\Temp\ccTVdntc.s 			page 1
  374              	.L24:
  135:Src/ModbusRtu.c ****     {
  375              		.loc 1 135 31 is_stmt 1 discriminator 1 view .LVU97
-ARM GAS  C:\Users\User\AppData\Local\Temp\ccTVdntc.s 			page 11
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccS06Y7L.s 			page 11
 
 
  135:Src/ModbusRtu.c ****     {
@@ -658,7 +658,7 @@ ARM GAS  C:\Users\User\AppData\Local\Temp\ccTVdntc.s 			page 1
  411 0040 10BC     		pop	{r4}
  412              	.LCFI3:
  413              		.cfi_restore 4
-ARM GAS  C:\Users\User\AppData\Local\Temp\ccTVdntc.s 			page 12
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccS06Y7L.s 			page 12
 
 
  414              		.cfi_def_cfa_offset 0
@@ -718,7 +718,7 @@ ARM GAS  C:\Users\User\AppData\Local\Temp\ccTVdntc.s 			page 1
  101:Src/ModbusRtu.c **** 	u8BufferSize++;
  463              		.loc 1 101 2 is_stmt 1 view .LVU123
  101:Src/ModbusRtu.c **** 	u8BufferSize++;
-ARM GAS  C:\Users\User\AppData\Local\Temp\ccTVdntc.s 			page 13
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccS06Y7L.s 			page 13
 
 
  464              		.loc 1 101 28 is_stmt 0 view .LVU124
@@ -778,7 +778,7 @@ ARM GAS  C:\Users\User\AppData\Local\Temp\ccTVdntc.s 			page 1
  504 0046 0A48     		ldr	r0, .L40+8
  505 0048 FFF7FEFF 		bl	HAL_GPIO_WritePin
  506              	.LVL43:
-ARM GAS  C:\Users\User\AppData\Local\Temp\ccTVdntc.s 			page 14
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccS06Y7L.s 			page 14
 
 
  123:Src/ModbusRtu.c **** 	{
@@ -838,7 +838,7 @@ ARM GAS  C:\Users\User\AppData\Local\Temp\ccTVdntc.s 			page 1
  556              		.cfi_def_cfa_offset 16
  557              		.cfi_offset 3, -16
  558              		.cfi_offset 4, -12
-ARM GAS  C:\Users\User\AppData\Local\Temp\ccTVdntc.s 			page 15
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccS06Y7L.s 			page 15
 
 
  559              		.cfi_offset 5, -8
@@ -898,7 +898,7 @@ ARM GAS  C:\Users\User\AppData\Local\Temp\ccTVdntc.s 			page 1
  595              		.loc 1 42 9 is_stmt 0 view .LVU163
  596 0022 2146     		mov	r1, r4
  597 0024 2846     		mov	r0, r5
-ARM GAS  C:\Users\User\AppData\Local\Temp\ccTVdntc.s 			page 16
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccS06Y7L.s 			page 16
 
 
  598 0026 FFF7FEFF 		bl	getRxBuffer
@@ -958,47 +958,47 @@ ARM GAS  C:\Users\User\AppData\Local\Temp\ccTVdntc.s 			page 1
  657              		.file 14 "c:\\users\\user\\.vscode\\extensions\\buzzyelectronics.stm-helper-1.2.9\\armgcc\\lib\\gc
  658              		.file 15 "c:\\users\\user\\.vscode\\extensions\\buzzyelectronics.stm-helper-1.2.9\\armgcc\\arm-non
  659              		.file 16 "c:\\users\\user\\.vscode\\extensions\\buzzyelectronics.stm-helper-1.2.9\\armgcc\\arm-non
-ARM GAS  C:\Users\User\AppData\Local\Temp\ccTVdntc.s 			page 17
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccS06Y7L.s 			page 17
 
 
  660              		.file 17 "Inc/main.h"
  661              		.file 18 "c:\\users\\user\\.vscode\\extensions\\buzzyelectronics.stm-helper-1.2.9\\armgcc\\arm-non
  662              		.file 19 "c:\\users\\user\\.vscode\\extensions\\buzzyelectronics.stm-helper-1.2.9\\armgcc\\arm-non
-ARM GAS  C:\Users\User\AppData\Local\Temp\ccTVdntc.s 			page 18
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccS06Y7L.s 			page 18
 
 
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 ModbusRtu.c
-C:\Users\User\AppData\Local\Temp\ccTVdntc.s:16     .text.StartMB:0000000000000000 $t
-C:\Users\User\AppData\Local\Temp\ccTVdntc.s:24     .text.StartMB:0000000000000000 StartMB
-C:\Users\User\AppData\Local\Temp\ccTVdntc.s:47     .text.StartMB:0000000000000010 $d
-C:\Users\User\AppData\Local\Temp\ccTVdntc.s:52     .text.get_FC3:0000000000000000 $t
-C:\Users\User\AppData\Local\Temp\ccTVdntc.s:59     .text.get_FC3:0000000000000000 get_FC3
-C:\Users\User\AppData\Local\Temp\ccTVdntc.s:104    .text.get_FC3:0000000000000024 $d
+C:\Users\User\AppData\Local\Temp\ccS06Y7L.s:16     .text.StartMB:0000000000000000 $t
+C:\Users\User\AppData\Local\Temp\ccS06Y7L.s:24     .text.StartMB:0000000000000000 StartMB
+C:\Users\User\AppData\Local\Temp\ccS06Y7L.s:47     .text.StartMB:0000000000000010 $d
+C:\Users\User\AppData\Local\Temp\ccS06Y7L.s:52     .text.get_FC3:0000000000000000 $t
+C:\Users\User\AppData\Local\Temp\ccS06Y7L.s:59     .text.get_FC3:0000000000000000 get_FC3
+C:\Users\User\AppData\Local\Temp\ccS06Y7L.s:104    .text.get_FC3:0000000000000024 $d
                             *COM*:0000000000000040 au8Buffer
                             *COM*:0000000000000020 au16regs
-C:\Users\User\AppData\Local\Temp\ccTVdntc.s:110    .rodata.getRxBuffer.str1.4:0000000000000000 $d
-C:\Users\User\AppData\Local\Temp\ccTVdntc.s:114    .text.getRxBuffer:0000000000000000 $t
-C:\Users\User\AppData\Local\Temp\ccTVdntc.s:121    .text.getRxBuffer:0000000000000000 getRxBuffer
-C:\Users\User\AppData\Local\Temp\ccTVdntc.s:284    .text.getRxBuffer:00000000000000b4 $d
-C:\Users\User\AppData\Local\Temp\ccTVdntc.s:293    .text.calcCRC:0000000000000000 $t
-C:\Users\User\AppData\Local\Temp\ccTVdntc.s:300    .text.calcCRC:0000000000000000 calcCRC
-C:\Users\User\AppData\Local\Temp\ccTVdntc.s:421    .text.calcCRC:0000000000000044 $d
-C:\Users\User\AppData\Local\Temp\ccTVdntc.s:426    .text.sendTxBuffer:0000000000000000 $t
-C:\Users\User\AppData\Local\Temp\ccTVdntc.s:433    .text.sendTxBuffer:0000000000000000 sendTxBuffer
-C:\Users\User\AppData\Local\Temp\ccTVdntc.s:532    .text.sendTxBuffer:0000000000000068 $d
-C:\Users\User\AppData\Local\Temp\ccTVdntc.s:539    .text.MBGetQuery:0000000000000000 $t
-C:\Users\User\AppData\Local\Temp\ccTVdntc.s:546    .text.MBGetQuery:0000000000000000 MBGetQuery
-C:\Users\User\AppData\Local\Temp\ccTVdntc.s:607    .text.MBGetQuery:000000000000002c $d
-C:\Users\User\AppData\Local\Temp\ccTVdntc.s:624    .bss.stri:0000000000000000 stri
-C:\Users\User\AppData\Local\Temp\ccTVdntc.s:630    .bss.u16errCnt:0000000000000000 u16errCnt
+C:\Users\User\AppData\Local\Temp\ccS06Y7L.s:110    .rodata.getRxBuffer.str1.4:0000000000000000 $d
+C:\Users\User\AppData\Local\Temp\ccS06Y7L.s:114    .text.getRxBuffer:0000000000000000 $t
+C:\Users\User\AppData\Local\Temp\ccS06Y7L.s:121    .text.getRxBuffer:0000000000000000 getRxBuffer
+C:\Users\User\AppData\Local\Temp\ccS06Y7L.s:284    .text.getRxBuffer:00000000000000b4 $d
+C:\Users\User\AppData\Local\Temp\ccS06Y7L.s:293    .text.calcCRC:0000000000000000 $t
+C:\Users\User\AppData\Local\Temp\ccS06Y7L.s:300    .text.calcCRC:0000000000000000 calcCRC
+C:\Users\User\AppData\Local\Temp\ccS06Y7L.s:421    .text.calcCRC:0000000000000044 $d
+C:\Users\User\AppData\Local\Temp\ccS06Y7L.s:426    .text.sendTxBuffer:0000000000000000 $t
+C:\Users\User\AppData\Local\Temp\ccS06Y7L.s:433    .text.sendTxBuffer:0000000000000000 sendTxBuffer
+C:\Users\User\AppData\Local\Temp\ccS06Y7L.s:532    .text.sendTxBuffer:0000000000000068 $d
+C:\Users\User\AppData\Local\Temp\ccS06Y7L.s:539    .text.MBGetQuery:0000000000000000 $t
+C:\Users\User\AppData\Local\Temp\ccS06Y7L.s:546    .text.MBGetQuery:0000000000000000 MBGetQuery
+C:\Users\User\AppData\Local\Temp\ccS06Y7L.s:607    .text.MBGetQuery:000000000000002c $d
+C:\Users\User\AppData\Local\Temp\ccS06Y7L.s:624    .bss.stri:0000000000000000 stri
+C:\Users\User\AppData\Local\Temp\ccS06Y7L.s:630    .bss.u16errCnt:0000000000000000 u16errCnt
                             *COM*:0000000000000002 u16OutCnt
                             *COM*:0000000000000002 u16InCnt
-C:\Users\User\AppData\Local\Temp\ccTVdntc.s:641    .data.u8BufferSize:0000000000000000 u8BufferSize
-C:\Users\User\AppData\Local\Temp\ccTVdntc.s:635    .bss.u8id:0000000000000000 u8id
-C:\Users\User\AppData\Local\Temp\ccTVdntc.s:620    .bss.stri:0000000000000000 $d
-C:\Users\User\AppData\Local\Temp\ccTVdntc.s:627    .bss.u16errCnt:0000000000000000 $d
-C:\Users\User\AppData\Local\Temp\ccTVdntc.s:636    .bss.u8id:0000000000000000 $d
+C:\Users\User\AppData\Local\Temp\ccS06Y7L.s:641    .data.u8BufferSize:0000000000000000 u8BufferSize
+C:\Users\User\AppData\Local\Temp\ccS06Y7L.s:635    .bss.u8id:0000000000000000 u8id
+C:\Users\User\AppData\Local\Temp\ccS06Y7L.s:620    .bss.stri:0000000000000000 $d
+C:\Users\User\AppData\Local\Temp\ccS06Y7L.s:627    .bss.u16errCnt:0000000000000000 $d
+C:\Users\User\AppData\Local\Temp\ccS06Y7L.s:636    .bss.u8id:0000000000000000 $d
 
 UNDEFINED SYMBOLS
 HAL_GPIO_WritePin

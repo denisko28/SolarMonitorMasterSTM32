@@ -1,4 +1,4 @@
-ARM GAS  C:\Users\User\AppData\Local\Temp\ccqOxDjs.s 			page 1
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccYXRptb.s 			page 1
 
 
    1              		.cpu cortex-m3
@@ -58,7 +58,7 @@ ARM GAS  C:\Users\User\AppData\Local\Temp\ccqOxDjs.s 			page 1
   51              	.L2:
   52              		.loc 1 5 59 discriminator 3 view .LVU7
   53 0010 172B     		cmp	r3, #23
-ARM GAS  C:\Users\User\AppData\Local\Temp\ccqOxDjs.s 			page 2
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccYXRptb.s 			page 2
 
 
   54 0012 12D0     		beq	.L3
@@ -118,7 +118,7 @@ ARM GAS  C:\Users\User\AppData\Local\Temp\ccqOxDjs.s 			page 1
   91              		.loc 1 9 9 is_stmt 1 view .LVU23
    9:Src/controllerSleep.c ****         myAlarm.AlarmTime.Seconds = 0;
   92              		.loc 1 9 35 is_stmt 0 view .LVU24
-ARM GAS  C:\Users\User\AppData\Local\Temp\ccqOxDjs.s 			page 3
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccYXRptb.s 			page 3
 
 
   93 0040 0023     		movs	r3, #0
@@ -178,7 +178,7 @@ ARM GAS  C:\Users\User\AppData\Local\Temp\ccqOxDjs.s 			page 1
  126 0060 EBE7     		b	.L3
  127              	.L6:
   18:Src/controllerSleep.c ****         }else if(realTime->Minutes >= 20 && realTime->Minutes <=39)
-ARM GAS  C:\Users\User\AppData\Local\Temp\ccqOxDjs.s 			page 4
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccYXRptb.s 			page 4
 
 
  128              		.loc 1 18 15 is_stmt 1 view .LVU34
@@ -238,7 +238,7 @@ ARM GAS  C:\Users\User\AppData\Local\Temp\ccqOxDjs.s 			page 1
  166              		.loc 1 34 1 is_stmt 0 view .LVU51
  167 0092 DFE7     		b	.L1
  168              		.cfi_endproc
-ARM GAS  C:\Users\User\AppData\Local\Temp\ccqOxDjs.s 			page 5
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccYXRptb.s 			page 5
 
 
  169              	.LFE68:
@@ -298,7 +298,7 @@ ARM GAS  C:\Users\User\AppData\Local\Temp\ccqOxDjs.s 			page 1
  218 001c 0C9B     		ldr	r3, [sp, #48]
  219 001e 1D70     		strb	r5, [r3]
   41:Src/controllerSleep.c ****     *buttonIsPressed = 0;
-ARM GAS  C:\Users\User\AppData\Local\Temp\ccqOxDjs.s 			page 6
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccYXRptb.s 			page 6
 
 
  220              		.loc 1 41 5 is_stmt 1 view .LVU59
@@ -346,52 +346,53 @@ ARM GAS  C:\Users\User\AppData\Local\Temp\ccqOxDjs.s 			page 1
  253 005c 3046     		mov	r0, r6
  254 005e FFF7FEFF 		bl	HAL_RTC_GetTime
  255              	.LVL12:
-  51:Src/controllerSleep.c ****     WakeupESP(hrtc, realTime, ESPhuart);
+  51:Src/controllerSleep.c ****     InitRealTime(ESPhuart, hrtc, realTime);
  256              		.loc 1 51 5 view .LVU68
- 257 0062 3A46     		mov	r2, r7
- 258 0064 2146     		mov	r1, r4
- 259 0066 3046     		mov	r0, r6
- 260 0068 FFF7FEFF 		bl	WakeupESP
+ 257 0062 2246     		mov	r2, r4
+ 258 0064 3146     		mov	r1, r6
+ 259 0066 3846     		mov	r0, r7
+ 260 0068 FFF7FEFF 		bl	InitRealTime
  261              	.LVL13:
-  52:Src/controllerSleep.c **** 
-  53:Src/controllerSleep.c ****     sprintf(mess, "%u:%u", realTime->Hours, realTime->Minutes);
- 262              		.loc 1 53 5 view .LVU69
+  52:Src/controllerSleep.c ****     //WakeupESP(hrtc, realTime, ESPhuart);
+  53:Src/controllerSleep.c **** 
+  54:Src/controllerSleep.c ****     sprintf(mess, "%u:%u", realTime->Hours, realTime->Minutes);
+ 262              		.loc 1 54 5 view .LVU69
  263 006c 6378     		ldrb	r3, [r4, #1]	@ zero_extendqisi2
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccYXRptb.s 			page 7
+
+
  264 006e 2278     		ldrb	r2, [r4]	@ zero_extendqisi2
-ARM GAS  C:\Users\User\AppData\Local\Temp\ccqOxDjs.s 			page 7
-
-
  265 0070 0B49     		ldr	r1, .L15+4
  266 0072 01A8     		add	r0, sp, #4
  267 0074 FFF7FEFF 		bl	sprintf
  268              	.LVL14:
-  54:Src/controllerSleep.c ****     HAL_UART_Transmit(TestHuart, (uint8_t *) mess, 10, 0xFFFF);
- 269              		.loc 1 54 5 view .LVU70
+  55:Src/controllerSleep.c ****     HAL_UART_Transmit(TestHuart, (uint8_t *) mess, 10, 0xFFFF);
+ 269              		.loc 1 55 5 view .LVU70
  270 0078 4FF6FF73 		movw	r3, #65535
  271 007c 0A22     		movs	r2, #10
  272 007e 01A9     		add	r1, sp, #4
  273 0080 4846     		mov	r0, r9
  274 0082 FFF7FEFF 		bl	HAL_UART_Transmit
  275              	.LVL15:
-  55:Src/controllerSleep.c **** 
-  56:Src/controllerSleep.c ****     RefreshLCD();
- 276              		.loc 1 56 5 view .LVU71
+  56:Src/controllerSleep.c **** 
+  57:Src/controllerSleep.c ****     RefreshLCD();
+ 276              		.loc 1 57 5 view .LVU71
  277 0086 FFF7FEFF 		bl	RefreshLCD
  278              	.LVL16:
-  57:Src/controllerSleep.c ****     *lastInteractionTime = HAL_GetTick();
- 279              		.loc 1 57 5 view .LVU72
- 280              		.loc 1 57 28 is_stmt 0 view .LVU73
+  58:Src/controllerSleep.c ****     *lastInteractionTime = HAL_GetTick();
+ 279              		.loc 1 58 5 view .LVU72
+ 280              		.loc 1 58 28 is_stmt 0 view .LVU73
  281 008a FFF7FEFF 		bl	HAL_GetTick
  282              	.LVL17:
- 283              		.loc 1 57 26 view .LVU74
+ 283              		.loc 1 58 26 view .LVU74
  284 008e 0E9B     		ldr	r3, [sp, #56]
  285 0090 1860     		str	r0, [r3]
-  58:Src/controllerSleep.c ****     DataRequest();
- 286              		.loc 1 58 5 is_stmt 1 view .LVU75
+  59:Src/controllerSleep.c ****     DataRequest();
+ 286              		.loc 1 59 5 is_stmt 1 view .LVU75
  287 0092 FFF7FEFF 		bl	DataRequest
  288              	.LVL18:
-  59:Src/controllerSleep.c **** }
- 289              		.loc 1 59 1 is_stmt 0 view .LVU76
+  60:Src/controllerSleep.c **** }
+ 289              		.loc 1 60 1 is_stmt 0 view .LVU76
  290 0096 05B0     		add	sp, sp, #20
  291              	.LCFI6:
  292              		.cfi_def_cfa_offset 28
@@ -399,7 +400,7 @@ ARM GAS  C:\Users\User\AppData\Local\Temp\ccqOxDjs.s 			page 1
  294 0098 BDE8F083 		pop	{r4, r5, r6, r7, r8, r9, pc}
  295              	.LVL19:
  296              	.L16:
- 297              		.loc 1 59 1 view .LVU77
+ 297              		.loc 1 60 1 view .LVU77
  298              		.align	2
  299              	.L15:
  300 009c 00000000 		.word	.LANCHOR0
@@ -416,170 +417,167 @@ ARM GAS  C:\Users\User\AppData\Local\Temp\ccqOxDjs.s 			page 1
  313              	sleepBegin:
  314              	.LVL20:
  315              	.LFB70:
-  60:Src/controllerSleep.c **** 
-  61:Src/controllerSleep.c **** void sleepBegin(RTC_HandleTypeDef *hrtc, RTC_TimeTypeDef *realTime, UART_HandleTypeDef *ESPhuart, u
-ARM GAS  C:\Users\User\AppData\Local\Temp\ccqOxDjs.s 			page 8
+  61:Src/controllerSleep.c **** 
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccYXRptb.s 			page 8
 
 
-  62:Src/controllerSleep.c ****     uint8_t *buttonIsPressed, uint32_t *lastInteractionTime, UART_HandleTypeDef *TestHuart) {
- 316              		.loc 1 62 93 is_stmt 1 view -0
+  62:Src/controllerSleep.c **** void sleepBegin(RTC_HandleTypeDef *hrtc, RTC_TimeTypeDef *realTime, UART_HandleTypeDef *ESPhuart, u
+  63:Src/controllerSleep.c ****     uint8_t *buttonIsPressed, uint32_t *lastInteractionTime, UART_HandleTypeDef *TestHuart) {
+ 316              		.loc 1 63 93 is_stmt 1 view -0
  317              		.cfi_startproc
  318              		@ args = 16, pretend = 0, frame = 16
  319              		@ frame_needed = 0, uses_anonymous_args = 0
- 320              		.loc 1 62 93 is_stmt 0 view .LVU79
- 321 0000 2DE9F043 		push	{r4, r5, r6, r7, r8, r9, lr}
+ 320              		.loc 1 63 93 is_stmt 0 view .LVU79
+ 321 0000 2DE9F047 		push	{r4, r5, r6, r7, r8, r9, r10, lr}
  322              	.LCFI7:
- 323              		.cfi_def_cfa_offset 28
- 324              		.cfi_offset 4, -28
- 325              		.cfi_offset 5, -24
- 326              		.cfi_offset 6, -20
- 327              		.cfi_offset 7, -16
- 328              		.cfi_offset 8, -12
- 329              		.cfi_offset 9, -8
- 330              		.cfi_offset 14, -4
- 331 0004 89B0     		sub	sp, sp, #36
- 332              	.LCFI8:
- 333              		.cfi_def_cfa_offset 64
- 334 0006 0646     		mov	r6, r0
- 335 0008 0F46     		mov	r7, r1
- 336 000a 1546     		mov	r5, r2
- 337 000c 9846     		mov	r8, r3
- 338 000e DDF84C90 		ldr	r9, [sp, #76]
-  63:Src/controllerSleep.c ****     setAlarm(hrtc, realTime);
- 339              		.loc 1 63 5 is_stmt 1 view .LVU80
- 340 0012 FFF7FEFF 		bl	setAlarm
- 341              	.LVL21:
-  64:Src/controllerSleep.c ****     SleepESP(ESPhuart);
- 342              		.loc 1 64 5 view .LVU81
- 343 0016 2846     		mov	r0, r5
- 344 0018 FFF7FEFF 		bl	SleepESP
- 345              	.LVL22:
-  65:Src/controllerSleep.c ****     char mess[15] = "Goes to sleep";
- 346              		.loc 1 65 5 view .LVU82
- 347              		.loc 1 65 10 is_stmt 0 view .LVU83
- 348 001c 04AC     		add	r4, sp, #16
- 349 001e 144A     		ldr	r2, .L19
- 350 0020 0FCA     		ldm	r2, {r0, r1, r2, r3}
- 351 0022 07C4     		stmia	r4!, {r0, r1, r2}
- 352 0024 2380     		strh	r3, [r4]	@ movhi
- 353 0026 0023     		movs	r3, #0
- 354 0028 8DF81E30 		strb	r3, [sp, #30]
-  66:Src/controllerSleep.c ****     HAL_UART_Transmit(TestHuart, (uint8_t *) mess,15,0xFFFF);
- 355              		.loc 1 66 5 is_stmt 1 view .LVU84
- 356 002c 4FF6FF73 		movw	r3, #65535
- 357 0030 0F22     		movs	r2, #15
- 358 0032 04A9     		add	r1, sp, #16
- 359 0034 4846     		mov	r0, r9
- 360 0036 FFF7FEFF 		bl	HAL_UART_Transmit
+ 323              		.cfi_def_cfa_offset 32
+ 324              		.cfi_offset 4, -32
+ 325              		.cfi_offset 5, -28
+ 326              		.cfi_offset 6, -24
+ 327              		.cfi_offset 7, -20
+ 328              		.cfi_offset 8, -16
+ 329              		.cfi_offset 9, -12
+ 330              		.cfi_offset 10, -8
+ 331              		.cfi_offset 14, -4
+ 332 0004 88B0     		sub	sp, sp, #32
+ 333              	.LCFI8:
+ 334              		.cfi_def_cfa_offset 64
+ 335 0006 0646     		mov	r6, r0
+ 336 0008 0F46     		mov	r7, r1
+ 337 000a 9046     		mov	r8, r2
+ 338 000c 9946     		mov	r9, r3
+ 339 000e DDF84CA0 		ldr	r10, [sp, #76]
+  64:Src/controllerSleep.c ****     setAlarm(hrtc, realTime);
+ 340              		.loc 1 64 5 is_stmt 1 view .LVU80
+ 341 0012 FFF7FEFF 		bl	setAlarm
+ 342              	.LVL21:
+  65:Src/controllerSleep.c ****     //SleepESP(ESPhuart);
+  66:Src/controllerSleep.c ****     char mess[15] = "Goes to sleep";
+ 343              		.loc 1 66 5 view .LVU81
+ 344              		.loc 1 66 10 is_stmt 0 view .LVU82
+ 345 0016 04AC     		add	r4, sp, #16
+ 346 0018 144D     		ldr	r5, .L19
+ 347 001a 95E80F00 		ldm	r5, {r0, r1, r2, r3}
+ 348 001e 07C4     		stmia	r4!, {r0, r1, r2}
+ 349 0020 2380     		strh	r3, [r4]	@ movhi
+ 350 0022 0023     		movs	r3, #0
+ 351 0024 8DF81E30 		strb	r3, [sp, #30]
+  67:Src/controllerSleep.c ****     HAL_UART_Transmit(TestHuart, (uint8_t *) mess,15,0xFFFF);
+ 352              		.loc 1 67 5 is_stmt 1 view .LVU83
+ 353 0028 4FF6FF73 		movw	r3, #65535
+ 354 002c 0F22     		movs	r2, #15
+ 355 002e 04A9     		add	r1, sp, #16
+ 356 0030 5046     		mov	r0, r10
+ 357 0032 FFF7FEFF 		bl	HAL_UART_Transmit
+ 358              	.LVL22:
+  68:Src/controllerSleep.c ****     //HAL_GPIO_WritePin(GPIOA, GoesToSleep_Pin, GPIO_PIN_RESET);
+  69:Src/controllerSleep.c ****     //HAL_Delay(100);
+  70:Src/controllerSleep.c ****     //HAL_GPIO_WritePin(GPIOA, GoesToSleep_Pin, GPIO_PIN_SET);
+  71:Src/controllerSleep.c ****     lcd_clear();
+ 359              		.loc 1 71 5 view .LVU84
+ 360 0036 FFF7FEFF 		bl	lcd_clear
  361              	.LVL23:
-  67:Src/controllerSleep.c ****     //HAL_GPIO_WritePin(GPIOA, GoesToSleep_Pin, GPIO_PIN_RESET);
-  68:Src/controllerSleep.c ****     //HAL_Delay(100);
-  69:Src/controllerSleep.c ****     //HAL_GPIO_WritePin(GPIOA, GoesToSleep_Pin, GPIO_PIN_SET);
-  70:Src/controllerSleep.c ****     lcd_clear();
- 362              		.loc 1 70 5 view .LVU85
- 363 003a FFF7FEFF 		bl	lcd_clear
-ARM GAS  C:\Users\User\AppData\Local\Temp\ccqOxDjs.s 			page 9
+  72:Src/controllerSleep.c ****     setBacklightOff();	
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccYXRptb.s 			page 9
 
 
+ 362              		.loc 1 72 5 view .LVU85
+ 363 003a FFF7FEFF 		bl	setBacklightOff
  364              	.LVL24:
-  71:Src/controllerSleep.c ****     setBacklightOff();	
- 365              		.loc 1 71 5 view .LVU86
- 366 003e FFF7FEFF 		bl	setBacklightOff
+  73:Src/controllerSleep.c ****     HAL_SuspendTick();
+ 365              		.loc 1 73 5 view .LVU86
+ 366 003e FFF7FEFF 		bl	HAL_SuspendTick
  367              	.LVL25:
-  72:Src/controllerSleep.c ****     HAL_SuspendTick();
- 368              		.loc 1 72 5 view .LVU87
- 369 0042 FFF7FEFF 		bl	HAL_SuspendTick
- 370              	.LVL26:
-  73:Src/controllerSleep.c ****     HAL_PWR_EnterSTOPMode(PWR_LOWPOWERREGULATOR_ON, PWR_STOPENTRY_WFI);
- 371              		.loc 1 73 5 view .LVU88
- 372 0046 0121     		movs	r1, #1
- 373 0048 0846     		mov	r0, r1
- 374 004a FFF7FEFF 		bl	HAL_PWR_EnterSTOPMode
- 375              	.LVL27:
-  74:Src/controllerSleep.c ****     sleepEnd(hrtc, realTime, ESPhuart, selectedElemIndex, scrollCount, buttonIsPressed, lastInterac
- 376              		.loc 1 74 5 view .LVU89
- 377 004e CDF80C90 		str	r9, [sp, #12]
- 378 0052 129B     		ldr	r3, [sp, #72]
- 379 0054 0293     		str	r3, [sp, #8]
- 380 0056 119B     		ldr	r3, [sp, #68]
- 381 0058 0193     		str	r3, [sp, #4]
- 382 005a 109B     		ldr	r3, [sp, #64]
- 383 005c 0093     		str	r3, [sp]
- 384 005e 4346     		mov	r3, r8
- 385 0060 2A46     		mov	r2, r5
- 386 0062 3946     		mov	r1, r7
- 387 0064 3046     		mov	r0, r6
- 388 0066 FFF7FEFF 		bl	sleepEnd
- 389              	.LVL28:
-  75:Src/controllerSleep.c **** }...
- 390              		.loc 1 75 1 is_stmt 0 view .LVU90
- 391 006a 09B0     		add	sp, sp, #36
- 392              	.LCFI9:
- 393              		.cfi_def_cfa_offset 28
- 394              		@ sp needed
- 395 006c BDE8F083 		pop	{r4, r5, r6, r7, r8, r9, pc}
- 396              	.LVL29:
- 397              	.L20:
- 398              		.loc 1 75 1 view .LVU91
- 399              		.align	2
- 400              	.L19:
- 401 0070 0C000000 		.word	.LANCHOR0+12
- 402              		.cfi_endproc
- 403              	.LFE70:
- 405              		.section	.rodata
- 406              		.align	2
- 407              		.set	.LANCHOR0,. + 0
- 408              	.LC0:
- 409 0000 57616B65 		.ascii	"Wakeup\000"
- 409      757000
- 410 0007 000000   		.space	3
- 411 000a 0000     		.space	2
- 412              	.LC2:
- 413 000c 476F6573 		.ascii	"Goes to sleep\000"
- 413      20746F20 
- 413      736C6565 
-ARM GAS  C:\Users\User\AppData\Local\Temp\ccqOxDjs.s 			page 10
+  74:Src/controllerSleep.c ****     HAL_PWR_EnterSTOPMode(PWR_LOWPOWERREGULATOR_ON, PWR_STOPENTRY_WFI);
+ 368              		.loc 1 74 5 view .LVU87
+ 369 0042 0121     		movs	r1, #1
+ 370 0044 0846     		mov	r0, r1
+ 371 0046 FFF7FEFF 		bl	HAL_PWR_EnterSTOPMode
+ 372              	.LVL26:
+  75:Src/controllerSleep.c ****     sleepEnd(hrtc, realTime, ESPhuart, selectedElemIndex, scrollCount, buttonIsPressed, lastInterac
+ 373              		.loc 1 75 5 view .LVU88
+ 374 004a CDF80CA0 		str	r10, [sp, #12]
+ 375 004e 129B     		ldr	r3, [sp, #72]
+ 376 0050 0293     		str	r3, [sp, #8]
+ 377 0052 119B     		ldr	r3, [sp, #68]
+ 378 0054 0193     		str	r3, [sp, #4]
+ 379 0056 109B     		ldr	r3, [sp, #64]
+ 380 0058 0093     		str	r3, [sp]
+ 381 005a 4B46     		mov	r3, r9
+ 382 005c 4246     		mov	r2, r8
+ 383 005e 3946     		mov	r1, r7
+ 384 0060 3046     		mov	r0, r6
+ 385 0062 FFF7FEFF 		bl	sleepEnd
+ 386              	.LVL27:
+  76:Src/controllerSleep.c **** }...
+ 387              		.loc 1 76 1 is_stmt 0 view .LVU89
+ 388 0066 08B0     		add	sp, sp, #32
+ 389              	.LCFI9:
+ 390              		.cfi_def_cfa_offset 32
+ 391              		@ sp needed
+ 392 0068 BDE8F087 		pop	{r4, r5, r6, r7, r8, r9, r10, pc}
+ 393              	.LVL28:
+ 394              	.L20:
+ 395              		.loc 1 76 1 view .LVU90
+ 396              		.align	2
+ 397              	.L19:
+ 398 006c 0C000000 		.word	.LANCHOR0+12
+ 399              		.cfi_endproc
+ 400              	.LFE70:
+ 402              		.section	.rodata
+ 403              		.align	2
+ 404              		.set	.LANCHOR0,. + 0
+ 405              	.LC0:
+ 406 0000 57616B65 		.ascii	"Wakeup\000"
+ 406      757000
+ 407 0007 000000   		.space	3
+ 408 000a 0000     		.space	2
+ 409              	.LC2:
+ 410 000c 476F6573 		.ascii	"Goes to sleep\000"
+ 410      20746F20 
+ 410      736C6565 
+ 410      7000
+ 411 001a 00       		.space	1
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccYXRptb.s 			page 10
 
 
- 413      7000
- 414 001a 00       		.space	1
- 415              		.text
- 416              	.Letext0:
- 417              		.file 2 "c:\\users\\user\\.vscode\\extensions\\buzzyelectronics.stm-helper-1.2.9\\armgcc\\arm-none
- 418              		.file 3 "c:\\users\\user\\.vscode\\extensions\\buzzyelectronics.stm-helper-1.2.9\\armgcc\\arm-none
- 419              		.file 4 "Drivers/CMSIS/Include/core_cm3.h"
- 420              		.file 5 "Drivers/CMSIS/Device/ST/STM32F1xx/Include/system_stm32f1xx.h"
- 421              		.file 6 "Drivers/CMSIS/Device/ST/STM32F1xx/Include/stm32f103xb.h"
- 422              		.file 7 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_def.h"
- 423              		.file 8 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_dma.h"
- 424              		.file 9 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_rtc.h"
- 425              		.file 10 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h"
- 426              		.file 11 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h"
- 427              		.file 12 "c:\\users\\user\\.vscode\\extensions\\buzzyelectronics.stm-helper-1.2.9\\armgcc\\arm-non
- 428              		.file 13 "c:\\users\\user\\.vscode\\extensions\\buzzyelectronics.stm-helper-1.2.9\\armgcc\\arm-non
- 429              		.file 14 "c:\\users\\user\\.vscode\\extensions\\buzzyelectronics.stm-helper-1.2.9\\armgcc\\lib\\gc
- 430              		.file 15 "c:\\users\\user\\.vscode\\extensions\\buzzyelectronics.stm-helper-1.2.9\\armgcc\\arm-non
- 431              		.file 16 "c:\\users\\user\\.vscode\\extensions\\buzzyelectronics.stm-helper-1.2.9\\armgcc\\arm-non
- 432              		.file 17 "Inc/ESPControl.h"
- 433              		.file 18 "Inc/i2c-lcd.h"
- 434              		.file 19 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h"
- 435              		.file 20 "Inc/main.h"
- 436              		.file 21 "c:\\users\\user\\.vscode\\extensions\\buzzyelectronics.stm-helper-1.2.9\\armgcc\\arm-non
-ARM GAS  C:\Users\User\AppData\Local\Temp\ccqOxDjs.s 			page 11
+ 412              		.text
+ 413              	.Letext0:
+ 414              		.file 2 "c:\\users\\user\\.vscode\\extensions\\buzzyelectronics.stm-helper-1.2.9\\armgcc\\arm-none
+ 415              		.file 3 "c:\\users\\user\\.vscode\\extensions\\buzzyelectronics.stm-helper-1.2.9\\armgcc\\arm-none
+ 416              		.file 4 "Drivers/CMSIS/Include/core_cm3.h"
+ 417              		.file 5 "Drivers/CMSIS/Device/ST/STM32F1xx/Include/system_stm32f1xx.h"
+ 418              		.file 6 "Drivers/CMSIS/Device/ST/STM32F1xx/Include/stm32f103xb.h"
+ 419              		.file 7 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_def.h"
+ 420              		.file 8 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_dma.h"
+ 421              		.file 9 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_rtc.h"
+ 422              		.file 10 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h"
+ 423              		.file 11 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h"
+ 424              		.file 12 "c:\\users\\user\\.vscode\\extensions\\buzzyelectronics.stm-helper-1.2.9\\armgcc\\arm-non
+ 425              		.file 13 "c:\\users\\user\\.vscode\\extensions\\buzzyelectronics.stm-helper-1.2.9\\armgcc\\arm-non
+ 426              		.file 14 "c:\\users\\user\\.vscode\\extensions\\buzzyelectronics.stm-helper-1.2.9\\armgcc\\lib\\gc
+ 427              		.file 15 "c:\\users\\user\\.vscode\\extensions\\buzzyelectronics.stm-helper-1.2.9\\armgcc\\arm-non
+ 428              		.file 16 "c:\\users\\user\\.vscode\\extensions\\buzzyelectronics.stm-helper-1.2.9\\armgcc\\arm-non
+ 429              		.file 17 "Inc/i2c-lcd.h"
+ 430              		.file 18 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h"
+ 431              		.file 19 "Inc/main.h"
+ 432              		.file 20 "Inc/ESPControl.h"
+ 433              		.file 21 "c:\\users\\user\\.vscode\\extensions\\buzzyelectronics.stm-helper-1.2.9\\armgcc\\arm-non
+ARM GAS  C:\Users\User\AppData\Local\Temp\ccYXRptb.s 			page 11
 
 
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 controllerSleep.c
-C:\Users\User\AppData\Local\Temp\ccqOxDjs.s:16     .text.setAlarm:0000000000000000 $t
-C:\Users\User\AppData\Local\Temp\ccqOxDjs.s:24     .text.setAlarm:0000000000000000 setAlarm
-C:\Users\User\AppData\Local\Temp\ccqOxDjs.s:172    .rodata.sleepEnd.str1.4:0000000000000000 $d
-C:\Users\User\AppData\Local\Temp\ccqOxDjs.s:176    .text.sleepEnd:0000000000000000 $t
-C:\Users\User\AppData\Local\Temp\ccqOxDjs.s:183    .text.sleepEnd:0000000000000000 sleepEnd
-C:\Users\User\AppData\Local\Temp\ccqOxDjs.s:300    .text.sleepEnd:000000000000009c $d
-C:\Users\User\AppData\Local\Temp\ccqOxDjs.s:306    .text.sleepBegin:0000000000000000 $t
-C:\Users\User\AppData\Local\Temp\ccqOxDjs.s:313    .text.sleepBegin:0000000000000000 sleepBegin
-C:\Users\User\AppData\Local\Temp\ccqOxDjs.s:401    .text.sleepBegin:0000000000000070 $d
-C:\Users\User\AppData\Local\Temp\ccqOxDjs.s:406    .rodata:0000000000000000 $d
+C:\Users\User\AppData\Local\Temp\ccYXRptb.s:16     .text.setAlarm:0000000000000000 $t
+C:\Users\User\AppData\Local\Temp\ccYXRptb.s:24     .text.setAlarm:0000000000000000 setAlarm
+C:\Users\User\AppData\Local\Temp\ccYXRptb.s:172    .rodata.sleepEnd.str1.4:0000000000000000 $d
+C:\Users\User\AppData\Local\Temp\ccYXRptb.s:176    .text.sleepEnd:0000000000000000 $t
+C:\Users\User\AppData\Local\Temp\ccYXRptb.s:183    .text.sleepEnd:0000000000000000 sleepEnd
+C:\Users\User\AppData\Local\Temp\ccYXRptb.s:300    .text.sleepEnd:000000000000009c $d
+C:\Users\User\AppData\Local\Temp\ccYXRptb.s:306    .text.sleepBegin:0000000000000000 $t
+C:\Users\User\AppData\Local\Temp\ccYXRptb.s:313    .text.sleepBegin:0000000000000000 sleepBegin
+C:\Users\User\AppData\Local\Temp\ccYXRptb.s:398    .text.sleepBegin:000000000000006c $d
+C:\Users\User\AppData\Local\Temp\ccYXRptb.s:403    .rodata:0000000000000000 $d
 
 UNDEFINED SYMBOLS
 HAL_RTC_SetAlarm_IT
@@ -590,12 +588,11 @@ HAL_UART_Transmit
 DelAllExceptions
 LoadingScreen
 HAL_RTC_GetTime
-WakeupESP
+InitRealTime
 sprintf
 RefreshLCD
 HAL_GetTick
 DataRequest
-SleepESP
 lcd_clear
 setBacklightOff
 HAL_SuspendTick
