@@ -824,7 +824,7 @@ void DataRequest()
 
 	if(selectedElemIndex == 0)
 	{
-		getRX =  MBGetQuery(&huart1, 2050, 1);
+		getRX = MBGetQuery(&huart1, 64250, 1);
     if(strcmp(Data[selectedElemIndex], getRX) != 0)
     {
       strcpy(Data[selectedElemIndex], getRX);

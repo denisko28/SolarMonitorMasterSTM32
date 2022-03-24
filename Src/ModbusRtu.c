@@ -29,6 +29,15 @@ void StartMB()
 	HAL_GPIO_WritePin(RS485_RTS_GPIO_Port, RS485_RTS_Pin, GPIO_PIN_RESET);
 }
 
+void ClearUARTBuffer(UART_HandleTypeDef *huart)
+{
+	char *tempBuff = calloc(500, sizeof(char));
+	HAL_UART_Receive_IT(huart,(uint8_t*) tempBuff, 500);
+	HAL_Delay(2);
+	HAL_UART_AbortReceive_IT(huart);
+	free(tempBuff);
+}
+
 char* MBGetQuery(UART_HandleTypeDef *huart,  uint16_t regAdress, uint16_t regNum)
 {
 	au8Buffer[ID] = 1;
@@ -37,6 +46,9 @@ char* MBGetQuery(UART_HandleTypeDef *huart,  uint16_t regAdress, uint16_t regNum
 	au8Buffer[ ADD_LO ] = lowByte(regAdress);
 	au8Buffer[ NB_HI ] = highByte(regNum);
 	au8Buffer[ NB_LO ] = lowByte(regNum);
+
+	ClearUARTBuffer(huart);
+
 	sendTxBuffer(huart, regNum);
 
 	return getRxBuffer(huart, regNum);
@@ -44,6 +56,14 @@ char* MBGetQuery(UART_HandleTypeDef *huart,  uint16_t regAdress, uint16_t regNum
 
 char* getRxBuffer(UART_HandleTypeDef *huart, uint8_t regNum)
 {
+	//Turn on UART iteraption
+	if(regNum == 2)
+	{
+		HAL_UART_Receive_IT(huart,(uint8_t*) au8Buffer, 9);
+	}else {
+		HAL_UART_Receive_IT(huart,(uint8_t*) au8Buffer, 7);
+	}
+
 	memset(stri, 0x00, 12);
 	
 	const uint32_t beginTime = HAL_GetTick();
@@ -118,14 +138,6 @@ void sendTxBuffer(UART_HandleTypeDef *huart, uint8_t regNum)
 	while(huart->gState != HAL_UART_STATE_READY){}
 	
 	HAL_GPIO_WritePin(RS485_RTS_GPIO_Port, RS485_RTS_Pin, GPIO_PIN_RESET);
-	
-	//Turn on UART iteraption
-	if(regNum == 2)
-	{
-		HAL_UART_Receive_IT(huart,(uint8_t*)  au8Buffer, 9);
-	}else {
-		HAL_UART_Receive_IT(huart,(uint8_t*)  au8Buffer, 7);
-	}
 }
 
 uint16_t calcCRC(uint8_t u8length)

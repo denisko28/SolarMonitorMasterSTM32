@@ -7,6 +7,7 @@
 
 
 void StartMB();
+void ClearUARTBuffer(UART_HandleTypeDef *huart);
 char* MBGetQuery(UART_HandleTypeDef *huart,  uint16_t regAdress, uint16_t regNum);
 char* getRxBuffer(UART_HandleTypeDef *huart, uint8_t regNum);
 void get_FC3(uint8_t regNum);
